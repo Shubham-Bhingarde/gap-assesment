@@ -4,14 +4,56 @@
 execute_control() {
     local CONTROL_ID="6.2.4.1"
     local TITLE="Ensure audit log files mode is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following script to verify audit log files are mode 0640 or more restrictive:
+#!/usr/bin/env bash
+{
+l_perm_mask=\"0137\"
+if [ -e \"/etc/audit/auditd.conf\" ]; then
+l_audit_log_directory=\"\$(dirname \"\$(awk -F= '/^\s*log_file\s*/{print
+\$2}' /etc/audit/auditd.conf | xargs)\")\"
+if [ -d \"\$l_audit_log_directory\" ]; then
+l_maxperm=\"\$(printf '%o' \$(( 0777 & ~\$l_perm_mask )) )\"
+a_files=()
+while IFS= read -r -d \$'\0' l_file; do
+[ -e \"\$l_file\" ] && a_files+=(\"\$l_file\")
+done < <(find \"\$l_audit_log_directory\" -maxdepth 1 -type f -perm
+/\"\$l_perm_mask\" -print0)
+if (( \"\${#a_files[@]}\" > 0 )); then
+for l_file in \"\${a_files[@]}\"; do
+l_file_mode=\"\$(stat -Lc '%#a' \"\$l_file\")\"
+echo -e \"\n- Audit Result:\n ** FAIL **\n - File:
+\\"\$l_file\\" is mode: \\"\$l_file_mode\\"\n
+(should be mode: \\"\$l_maxperm\\"
+or more restrictive)\n\"
+done
+else
+echo -e \"\n- Audit Result:\n ** PASS **\n - All files in
+\\"\$l_audit_log_directory\\" are mode: \\"\$l_maxperm\\" or more restrictive\"
+fi
+else
+echo -e \"\n- Audit Result:\n ** FAIL **\n - Log file directory not
+set in \\"/etc/audit/auditd.conf\\" please set log file directory\"
+fi
+else
+echo -e \"\n- Audit Result:\n ** FAIL **\n - File:
+\\"/etc/audit/auditd.conf\\" not found.\n - ** Verify auditd is installed **\"
+fi
+}"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.4.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Audit log files contain information about the system and system activity.
+
+Rationale:
+Access to audit records can reveal system and configuration data to attackers,
+potentially compromising its confidentiality."
+    local ATTACK=""
+    local REMEDIATION="Run the following command to remove more permissive mode than 0640 from audit log
+files:
+# [ -f /etc/audit/auditd.conf ] && find \"\$(dirname \$(awk -F \"=\"
+'/^\s*log_file/ {print \$2}' /etc/audit/auditd.conf | xargs))\" -type f -perm
+/0137 -exec chmod u-x,g-wx,o-rwx {} +"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

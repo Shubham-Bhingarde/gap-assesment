@@ -4,14 +4,70 @@
 execute_control() {
     local CONTROL_ID="5.3.3.2.5"
     local TITLE="Ensure password maximum sequential characters is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify that the maxsequence option is set to 3 or less, not
+0, and follows local site policy:
+# grep -Psi -- '^\h*maxsequence\h*=\h*[1-3]\b' /etc/security/pwquality.conf
+/etc/security/pwquality.conf.d/*.conf
+Example output:
+/etc/security/pwquality.conf.d/50-pwmaxsequence.conf:maxsequence = 3
+Verify returned value(s) are 3 or less, not 0, and meet local site policy
+Run the following command to verify that maxsequence is not set, is 3 or less, not 0, and
+conforms to local site policy:
+# grep -Psi -'^\h*password\h+(requisite|required|sufficient)\h+pam_pwquality\.so\h+([^#\n\
+r]+\h+)?maxsequence\h*=\h*(0|[4-9]|[1-9][0-9]+)\b' /etc/pam.d/common-password
+Nothing should be returned
+Note:
+•
+•
+•
+settings should be configured in only one location for clarity
+Settings observe an order of precedence:
+o module arguments override the settings in the
+/etc/security/pwquality.conf configuration file
+o settings in the /etc/security/pwquality.conf configuration file
+override settings in a .conf file in the
+/etc/security/pwquality.conf.d/ directory
+o settings in a .conf file in the /etc/security/pwquality.conf.d/
+directory are read in canonical order, with last read file containing the
+setting taking precedence
+It is recommended that settings be configured in a .conf file in the
+/etc/security/pwquality.conf.d/ directory for clarity, convenience, and
+durability."
     local RISK="Unknown"
-    local DESC="Placeholder description for 5.3.3.2.5. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The pwquality maxsequence option sets the maximum length of monotonic character
+sequences in the new password. Examples of such sequence are 12345 or fedcb. The
+check is disabled if the value is 0.
+Note: Most such passwords will not pass the simplicity check unless the sequence is
+only a minor part of the password.
+
+Rationale:
+Use of a complex password helps to increase the time and resources required to
+compromise the password. Password complexity, or strength, is a measure of the
+effectiveness of a password in resisting attempts at guessing and brute-force attacks.
+Password complexity is one factor of several that determines how long it takes to crack
+a password. The more complex the password, the greater the number of possible
+combinations that need to be tested before the password is compromised."
+    local ATTACK=""
+    local REMEDIATION="Create or modify a file ending in .conf in the /etc/security/pwquality.conf.d/
+directory or the file /etc/security/pwquality.conf and add or modify the following
+line to set maxsequence to 3 or less and not 0. Ensure setting conforms to local site
+policy:
+Example:
+#!/usr/bin/env bash
+{
+sed -ri 's/^\s*maxsequence\s*=/# &/' /etc/security/pwquality.conf
+[ ! -d /etc/security/pwquality.conf.d/ ] && mkdir
+/etc/security/pwquality.conf.d/
+printf '\n%s' \"maxsequence = 3\" > /etc/security/pwquality.conf.d/50pwmaxsequence.conf
+}
+Run the following command:
+# grep -Pl -- '\bpam_pwquality\.so\h+([^#\n\r]+\h+)?maxsequence\b'
+/usr/share/pam-configs/*
+Edit any returned files and remove the maxsequence argument from the
+pam_pwquality.so line(s):"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

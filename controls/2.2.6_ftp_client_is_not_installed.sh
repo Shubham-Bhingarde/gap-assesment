@@ -4,14 +4,27 @@
 execute_control() {
     local CONTROL_ID="2.2.6"
     local TITLE="Ensure ftp client is not installed ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Verify tnftp & ftp is not installed. Use the following command to provide the needed
+information:
+# dpkg-query -l | awk '{print \$2}' | grep -E '^ftp|^tnftp' &>/dev/null &&
+echo \"ftp is installed\"
+Nothing should be returned."
     local RISK="Unknown"
-    local DESC="Placeholder description for 2.2.6. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="tnftp an enhanced FTP client, is the user interface to the Internet standard File
+Transfer Protocol. The program allows a user to transfer files to and from a remote
+network site.
+
+Rationale:
+Unless there is a need to run the system using Internet standard File Transfer Protocol
+(for example, to allow anonymous downloads), it is recommended that the package be
+removed to reduce the potential attack surface."
+    local ATTACK=""
+    local REMEDIATION="Run the following commands to uninstall tnftp & ftp:
+# apt purge ftp
+# apt purge tnftp"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

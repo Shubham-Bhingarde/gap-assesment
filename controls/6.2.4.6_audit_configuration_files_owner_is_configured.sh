@@ -4,14 +4,28 @@
 execute_control() {
     local CONTROL_ID="6.2.4.6"
     local TITLE="Ensure audit configuration files owner is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify that the audit configuration files are owned by the
+root user:
+# find /etc/audit/ -type f \( -name '*.conf' -o -name '*.rules' \) ! -user
+root
+Nothing should be returned"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.4.6. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Audit configuration files control auditd and what events are audited.
+
+Rationale:
+Access to the audit configuration files could allow unauthorized personnel to prevent the
+auditing of critical events.
+Misconfigured audit configuration files may prevent the auditing of critical events or
+impact the system's performance by overwhelming the audit log. Misconfiguration of the
+audit configuration files may also make it more difficult to establish and investigate
+events relating to an incident."
+    local ATTACK=""
+    local REMEDIATION="Run the following command to change ownership to root user:
+# find /etc/audit/ -type f \( -name '*.conf' -o -name '*.rules' \) ! -user
+root -exec chown root {} +"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

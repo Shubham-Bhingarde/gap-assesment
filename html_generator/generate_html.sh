@@ -44,8 +44,7 @@ for ((i=0; i<$COUNT; i++)); do
         <td>$CURRENT</td>
         <td class=\"$STATUS_CLASS\">$RESULT</td>
         <td class=\"risk-$RISK\">$RISK</td>
-        <td>$TIMESTAMP</td>
-    </tr>
+        </tr>
     <tr class=\"details-row\" id=\"details-$ID\">
         <td colspan=\"6\">
             <div class=\"details-content\">

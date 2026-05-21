@@ -4,14 +4,36 @@
 execute_control() {
     local CONTROL_ID="1.2.2.1"
     local TITLE="Ensure updates, patches, and additional security software are installed ((Manual)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Verify there are no updates or patches to install:
+# apt update
+# apt -s upgrade"
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.2.2.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Periodically patches are released for included software either due to security flaws or to
+include additional functionality.
+
+Rationale:
+Newer patches may contain security enhancements that would not be available through
+the latest full update. As a result, it is recommended that the latest software patches be
+used to take advantage of the latest functionality. As with any software installation,
+organizations need to determine if a given update meets their requirements and verify
+the compatibility and supportability of any additional software against the update
+revision that is selected."
+    local ATTACK=""
+    local REMEDIATION="Run the following commands to update all packages following local site policy guidance
+on applying updates and patches:
+Run the following command to update the system with the available patches and
+updates:
+# apt update
+Run one of the following commands to apply the updates and patches:
+# apt upgrade
+- OR # apt dist-upgrade
+Note: When running the command apt dist-upgrade that apt has a \"smart\" conflict
+resolution system, and it will attempt to upgrade the most important packages at the
+expense of less important ones if necessary. So, dist-upgrade command may remove
+some packages."
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

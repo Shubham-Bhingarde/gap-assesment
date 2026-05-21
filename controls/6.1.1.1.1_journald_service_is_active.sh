@@ -4,14 +4,23 @@
 execute_control() {
     local CONTROL_ID="6.1.1.1.1"
     local TITLE="Ensure journald service is active ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify systemd-journald is active:
+# systemctl is-active systemd-journald.service
+active"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.1.1.1.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Ensure that the systemd-journald service is enabled to allow capturing of logging
+events.
+
+Rationale:
+If the systemd-journald service is not enabled to start on boot, the system will not
+capture logging events."
+    local ATTACK=""
+    local REMEDIATION="Run the following commands to unmask, enable, and start systemdjournald.service
+# systemctl unmask systemd-journald.service
+# systemctl --now enable systemd-journald.service"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

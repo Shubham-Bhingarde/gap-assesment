@@ -4,14 +4,22 @@
 execute_control() {
     local CONTROL_ID="6.2.2.2"
     local TITLE="Ensure audit logs are not automatically deleted ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command and verify output matches:
+# grep max_log_file_action /etc/audit/auditd.conf
+max_log_file_action = keep_logs"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.2.2. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The max_log_file_action setting determines how to handle the audit log file reaching
+the max file size. A value of keep_logs will rotate the logs but never delete old logs.
+
+Rationale:
+In high security contexts, the benefits of maintaining a long audit history exceed the cost
+of storing the audit history."
+    local ATTACK=""
+    local REMEDIATION="Set the following parameter in /etc/audit/auditd.conf:
+max_log_file_action = keep_logs"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

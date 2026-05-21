@@ -4,14 +4,87 @@
 execute_control() {
     local CONTROL_ID="5.1.1"
     local TITLE="Ensure access to /etc/ssh/sshd_config is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following script and verify /etc/ssh/sshd_config and files ending in .conf in
+the /etc/ssh/sshd_config.d directory are:
+•
+•
+•
+Mode 0600 or more restrictive
+Owned by the root user
+Group owned by the group root.
+#!/usr/bin/env bash
+{
+a_output=(); a_output2=()
+perm_mask='0177' && maxperm=\"\$( printf '%o' \$(( 0777 & ~\$perm_mask)) )\"
+f_sshd_files_chk()
+{
+while IFS=: read -r l_mode l_user l_group; do
+a_out2=()
+[ \$(( \$l_mode & \$perm_mask )) -gt 0 ] && a_out2+=(\"
+Is mode:
+\\"\$l_mode\\"\" \
+\"
+should be mode: \\"\$maxperm\\" or more restrictive\")
+[ \"\$l_user\" != \"root\" ] && a_out2+=(\"
+Is owned by \\"\$l_user\\"
+should be owned by \\"root\\"\")
+[ \"\$l_group\" != \"root\" ] && a_out2+=(\"
+Is group owned by
+\\"\$l_user\\" should be group owned by \\"root\\"\")
+if [ \"\${#a_out2[@]}\" -gt \"0\" ]; then
+a_output2+=(\" - File: \\"\$l_file\\":\" \"\${a_out2[@]}\")
+else
+a_output+=(\" - File: \\"\$l_file\\":\" \"
+Correct: mode (\$l_mode),
+owner (\$l_user)\" \
+\"
+and group owner (\$l_group) configured\")
+fi
+done < <(stat -Lc '%#a:%U:%G' \"\$l_file\")
+}
+[ -e \"/etc/ssh/sshd_config\" ] && l_file=\"/etc/ssh/sshd_config\" &&
+f_sshd_files_chk
+while IFS= read -r -d \$'\0' l_file; do
+[ -e \"\$l_file\" ] && f_sshd_files_chk
+done < <(find /etc/ssh/sshd_config.d -type f -name '*.conf' \( -perm /077
+-o ! -user root -o ! -group root \) -print0 2>/dev/null)
+if [ \"\${#a_output2[@]}\" -le 0 ]; then
+printf '%s\n' \"\" \"- Audit Result:\" \" ** PASS **\" \"\${a_output[@]}\" \"\"
+else
+printf '%s\n' \"\" \"- Audit Result:\" \" ** FAIL **\" \" - Reason(s) for
+audit failure:\" \"\${a_output2[@]}\"
+[ \"\${#a_output[@]}\" -gt 0 ] && printf '%s\n' \"\" \"- Correctly set:\"
+\"\${a_output[@]}\" \"\"
+fi
+}
+- IF - other locations are listed in an Include statement, *.conf files in these locations
+should also be checked."
     local RISK="Unknown"
-    local DESC="Placeholder description for 5.1.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The file /etc/ssh/sshd_config, and files ending in .conf in the
+/etc/ssh/sshd_config.d directory, contain configuration specifications for sshd.
+
+Rationale:
+Configuration specifications for sshd need to be protected from unauthorized changes
+by non-privileged users."
+    local ATTACK=""
+    local REMEDIATION="Run the following script to set ownership and permissions on /etc/ssh/sshd_config
+and files ending in .conf in the /etc/ssh/sshd_config.d directory:
+#!/usr/bin/env bash
+{
+chmod u-x,og-rwx /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+while IFS= read -r -d \$'\0' l_file; do
+if [ -e \"\$l_file\" ]; then
+chmod u-x,og-rwx \"\$l_file\"
+chown root:root \"\$l_file\"
+fi
+done < <(find /etc/ssh/sshd_config.d -type f -print0 2>/dev/null)
+}
+- IF - other locations are listed in an Include statement, *.conf files in these locations
+access should also be modified."
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

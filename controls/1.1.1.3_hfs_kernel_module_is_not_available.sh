@@ -4,14 +4,63 @@
 execute_control() {
     local CONTROL_ID="1.1.1.3"
     local TITLE="Ensure hfs kernel module is not available ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Verify the hfs kernel module is not available on the system or has been disabled.
+1. Run the following script to determine if the hfs kernel module is available on the
+system:
+#!/usr/bin/env bash
+{
+l_mod_name=\"hfs\" l_mod_type=\"fs\"
+while IFS= read -r l_mod_path; do
+if [ -d \"\$l_mod_path/\${l_mod_name//-/\/}\" ] && \
+[ -n \"\$(ls -A \"\$l_mod_path/\${l_mod_name//-/\/}\")\" ]; then
+printf '%s\n' \"\$l_mod_name exists in \$l_mod_path\"
+fi
+done < <(readlink -e /usr/lib/modules/**/kernel/\$l_mod_type \
+|| readlink -e /lib/modules/**/kernel/\$l_mod_type)
+}
+If nothing is returned, the hfs kernel module is not available on the system and no
+further audit steps are required.
+Note: Some systems may include the hfs filesystem as part of the kernel opposed to
+being available as a kernel module. In this case, the above audit will not return anything.
+This is also considered a passing state.
+If anything is returned by the above script:
+2. Verify the hfs kernel module is not loaded and not loadable by performing the
+following:
+Run the following command to verify the hfs kernel module is not loaded:
+# lsmod | grep 'hfs'
+Nothing should be returned.
+Run the following command to verify the hfs kernel module is not loadable:
+# modprobe --showconfig | grep -P -- '\b(install|blacklist)\h+hfs\b'
+Verify the output includes:
+blacklist hfs
+-ANDinstall hfs /bin/false
+-ORinstall hfs /bin/true
+Example output:
+blacklist hfs
+install hfs /bin/false"
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.1.1.3. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The hfs filesystem type is a hierarchical filesystem that allows you to mount Mac OS
+filesystems.
+
+Rationale:
+Removing support for unneeded filesystem types reduces the local attack surface of the
+system. If this filesystem type is not needed, disable it."
+    local ATTACK=""
+    local REMEDIATION="Unload and disable the hfs kernel module.
+1. Run the following commands to unload the hfs kernel module:
+modprobe -r hfs 2>/dev/null
+rmmod hfs 2>/dev/null
+2. Perform the following to disable the hfs kernel module:
+Create a file ending in .conf with install hfs /bin/false in the /etc/modprobe.d/
+directory.
+Example:
+# printf '%s\n' \"\" \"install hfs /bin/false\" >> /etc/modprobe.d/60-hfs.conf
+Create a file ending in .conf with blacklist hfs in the /etc/modprobe.d/ directory.
+Example:
+printf '%s\n' \"\" \"blacklist hfs\" >> /etc/modprobe.d/60-hfs.conf"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

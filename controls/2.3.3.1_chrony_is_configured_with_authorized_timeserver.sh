@@ -4,14 +4,108 @@
 execute_control() {
     local CONTROL_ID="2.3.3.1"
     local TITLE="Ensure chrony is configured with authorized timeserver ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="- IF - chrony is in use on the system, run the following script to ensure chrony is
+configured with an authorized timeserver:
+#!/usr/bin/env bash
+{
+a_output=() a_output2=() a_config_files=(\"/etc/chrony/chrony.conf\")
+l_include='(confdir|sourcedir)' l_parameter_name='(server|pool)'
+l_parameter_value='.+'
+while IFS= read -r l_conf_loc; do
+l_dir=\"\" l_ext=\"\"
+if [ -d \"\$l_conf_loc\" ]; then
+l_dir=\"\$l_conf_loc\" l_ext=\"*\"
+elif grep -Psq '\/\*\.([^#/\n\r]+)?\h*\$' <<< \"\$l_conf_loc\" || [ -f
+\"\$(readlink -f \"\$l_conf_loc\")\" ]; then
+l_dir=\"\$(dirname \"\$l_conf_loc\")\" l_ext=\"\$(basename \"\$l_conf_loc\")\"
+fi
+if [[ -n \"\$l_dir\" && -n \"\$l_ext\" ]]; then
+while IFS= read -r -d \$'\0' l_file_name; do
+[ -f \"\$(readlink -f \"\$l_file_name\")\" ] &&
+a_config_files+=(\"\$(readlink -f \"\$l_file_name\")\")
+done < <(find -L \"\$l_dir\" -type f -name \"\$l_ext\" -print0
+2>/dev/null)
+fi
+done < <(awk '\$1~/^\s*'\"\$l_include\"'\$/{print \$2}' \"\${a_config_files[*]}\"
+2>/dev/null)
+for l_file in \"\${a_config_files[@]}\"; do
+l_parameter_line=\"\$(grep -Psi
+'^\h*'\"\$l_parameter_name\"'(\h+|\h*:\h*)'\"\$l_parameter_value\"'\b' \"\$l_file\")\"
+[ -n \"\$l_parameter_line\" ] && a_output+=(\" - Parameter: \\"\$(tr -d '()'
+<<< \${l_parameter_name//|/ or })\\"\" \
+\"
+Exists in the file: \\"\$l_file\\" as:\" \"\$l_parameter_line\")
+done
+[ \"\${#a_output[@]}\" -le \"0\" ] && a_output2+=(\" - Parameter: \\"\$(tr -d
+'()' <<< \${l_parameter_name//|/ or })\\"\" \
+\"
+Does not exist in the chrony configuration\")
+if [ \"\${#a_output2[@]}\" -le 0 ]; then
+printf '%s\n' \"\" \"- Audit Result:\" \" ** PASS **\" \"\${a_output[@]}\" \"\"
+else
+printf '%s\n' \"\" \"- Audit Result:\" \" ** FAIL **\" \" - Reason(s) for
+audit failure:\" \"\${a_output2[@]}\"
+fi
+}"
     local RISK="Unknown"
-    local DESC="Placeholder description for 2.3.3.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="•
+server
+o
+o
+o
+•
+The server directive specifies an NTP server which can be used as a time
+source. The client-server relationship is strictly hierarchical: a client might
+synchronize its system time to that of the server, but the server’s system
+time will never be influenced by that of a client.
+This directive can be used multiple times to specify multiple servers.
+The directive is immediately followed by either the name of the server, or
+its IP address.
+pool
+o
+o
+o
+The syntax of this directive is similar to that for the server directive, except
+that it is used to specify a pool of NTP servers rather than a single NTP
+server. The pool name is expected to resolve to multiple addresses which
+might change over time.
+This directive can be used multiple times to specify multiple pools.
+All options valid in the server directive can be used in this directive too.
+
+Rationale:
+Time synchronization is important to support time sensitive security mechanisms and to
+ensure log files have consistent time records across the enterprise to aid in forensic
+investigations"
+    local ATTACK=""
+    local REMEDIATION="Edit /etc/chrony/chrony.conf or a file ending in .sources in
+/etc/chrony/sources.d/ and add or edit server or pool lines as appropriate
+according to local site policy:
+Edit the Chrony configuration and add or edit the server and/or pool lines returned by
+the Audit Procedure as appropriate according to local site policy
+<[server|pool]> <[remote-server|remote-pool]>
+Example script to add a drop-in configuration for the pool directive:
+#!/usr/bin/env bash
+{
+[ ! -d \"/etc/chrony/sources.d/\" ] && mkdir /etc/chrony/sources.d/
+printf '%s\n' \"\" \"#The maxsources option is unique to the pool directive\"
+\
+\"pool time.nist.gov iburst maxsources 4\" >> /etc/chrony/sources.d/60sources.sources
+chronyc reload sources &>/dev/null
+}
+Example script to add a drop-in configuration for the server directive:
+#!/usr/bin/env bash
+{
+[ ! -d \"/etc/chrony/sources.d/\" ] && mkdir /etc/chrony/sources.d/
+printf '%s\n' \"\" \"server time-a-g.nist.gov iburst\" \"server 132.163.97.3
+iburst\" \
+\"server time-d-b.nist.gov iburst\" >> /etc/chrony/sources.d/60sources.sources
+chronyc reload sources &>/dev/null
+}
+Run the following command to reload the chronyd config:
+# systemctl reload-or-restart chronyd"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

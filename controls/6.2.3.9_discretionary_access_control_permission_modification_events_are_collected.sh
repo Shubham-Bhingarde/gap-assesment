@@ -4,14 +4,144 @@
 execute_control() {
     local CONTROL_ID="6.2.3.9"
     local TITLE="Ensure discretionary access control permission modification events are collected ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Note: Output showing all audited syscalls, e.g. (-a always,exit -F arch=b64 -S
+chmod,fchmod,fchmodat,chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr,removexattr
+,lremovexattr,fremovexattr -F auid>=1000 -F auid!=unset -F key=perm_mod) is also
+acceptable. These have been separated by function on the displayed output for clarity.
+On disk configuration
+Run the following command to check the on disk rules:
+# {
+UID_MIN=\$(awk '/^\s*UID_MIN/{print \$2}' /etc/login.defs)
+[ -n \"\${UID_MIN}\" ] && awk \"/^ *-a *always,exit/ \
+&&/ -F *arch=b(32|64)/ \
+&&(/ -F *auid!=unset/||/ -F *auid!=-1/||/ -F *auid!=4294967295/) \
+&&/ -S/ \
+&&/ -F *auid>=\${UID_MIN}/ \
+&&(/chmod/||/fchmod/||/fchmodat/ \
+||/chown/||/fchown/||/fchownat/||/lchown/ \
+||/setxattr/||/lsetxattr/||/fsetxattr/ \
+||/removexattr/||/lremovexattr/||/fremovexattr/) \
+&&(/ key= *[!-~]* *\$/||/ -k *[!-~]* *\$/)\" /etc/audit/rules.d/*.rules \
+|| printf \"ERROR: Variable 'UID_MIN' is unset.\n\"
+}
+Verify the output matches:
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F
+auid!=unset -F key=perm_mod
+-a always,exit -F arch=b64 -S chown,fchown,lchown,fchownat -F auid>=1000 -F
+auid!=unset -F key=perm_mod
+-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat -F auid>=1000 -F
+auid!=unset -F key=perm_mod
+-a always,exit -F arch=b32 -S lchown,fchown,chown,fchownat -F auid>=1000 -F
+auid!=unset -F key=perm_mod
+-a always,exit -F arch=b64 -S
+setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F
+auid>=1000 -F auid!=unset -F key=perm_mod
+-a always,exit -F arch=b32 -S
+setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F
+auid>=1000 -F auid!=unset -F key=perm_mod
+Running configuration
+Run the following command to check loaded rules:
+# {
+UID_MIN=\$(awk '/^\s*UID_MIN/{print \$2}' /etc/login.defs)
+[ -n \"\${UID_MIN}\" ] && auditctl -l | awk \"/^ *-a *always,exit/ \
+&&/ -F *arch=b(32|64)/ \
+&&(/ -F *auid!=unset/||/ -F *auid!=-1/||/ -F *auid!=4294967295/) \
+&&/ -S/ \
+&&/ -F *auid>=\${UID_MIN}/ \
+&&(/chmod/||/fchmod/||/fchmodat/ \
+||/chown/||/fchown/||/fchownat/||/lchown/ \
+||/setxattr/||/lsetxattr/||/fsetxattr/ \
+||/removexattr/||/lremovexattr/||/fremovexattr/) \
+&&(/ key= *[!-~]* *\$/||/ -k *[!-~]* *\$/)\" \
+|| printf \"ERROR: Variable 'UID_MIN' is unset.\n\"
+}
+Verify the output matches:
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=-1
+-F key=perm_mod
+-a always,exit -F arch=b64 -S chown,fchown,lchown,fchownat -F auid>=1000 -F
+auid!=-1 -F key=perm_mod
+-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=-1
+-F key=perm_mod
+-a always,exit -F arch=b32 -S lchown,fchown,chown,fchownat -F auid>=1000 -F
+auid!=-1 -F key=perm_mod
+-a always,exit -F arch=b64 -S
+setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F
+auid>=1000 -F auid!=-1 -F key=perm_mod
+-a always,exit -F arch=b32 -S
+setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F
+auid>=1000 -F auid!=-1 -F key=perm_mod"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.3.9. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Monitor changes to file permissions, attributes, ownership and group. The parameters in
+this section track changes for system calls that affect file permissions and attributes.
+The following commands and system calls effect the permissions, ownership and
+various attributes of files.
+•
+•
+•
+•
+•
+•
+•
+•
+•
+•
+•
+•
+•
+chmod
+fchmod
+fchmodat
+chown
+fchown
+fchownat
+lchown
+setxattr
+lsetxattr
+fsetxattr
+removexattr
+lremovexattr
+fremovexattr
+In all cases, an audit record will only be written for non-system user ids and will ignore
+Daemon events. All audit records will be tagged with the identifier \"perm_mod.\"
+
+Rationale:
+Monitoring for changes in file attributes could alert a system administrator to activity that
+could indicate intruder activity or policy violation."
+    local ATTACK=""
+    local REMEDIATION="Create audit rules
+Edit or create a file in the /etc/audit/rules.d/ directory, ending in .rules extension,
+with the relevant rules to monitor discretionary access control permission modification
+events.
+Example:
+# {
+UID_MIN=\$(awk '/^\s*UID_MIN/{print \$2}' /etc/login.defs)
+[ -n \"\${UID_MIN}\" ] && printf \"
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=\${UID_MIN} -F
+auid!=unset -F key=perm_mod
+-a always,exit -F arch=b64 -S chown,fchown,lchown,fchownat -F
+auid>=\${UID_MIN} -F auid!=unset -F key=perm_mod
+-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat -F auid>=\${UID_MIN} -F
+auid!=unset -F key=perm_mod
+-a always,exit -F arch=b32 -S lchown,fchown,chown,fchownat -F
+auid>=\${UID_MIN} -F auid!=unset -F key=perm_mod
+-a always,exit -F arch=b64 -S
+setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F
+auid>=\${UID_MIN} -F auid!=unset -F key=perm_mod
+-a always,exit -F arch=b32 -S
+setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F
+auid>=\${UID_MIN} -F auid!=unset -F key=perm_mod
+\" >> /etc/audit/rules.d/50-perm_mod.rules || printf \"ERROR: Variable
+'UID_MIN' is unset.\n\"
+}
+Load audit rules
+Merge and load the rules into active configuration:
+# augenrules --load
+Check if reboot is required.
+# if [[ \$(auditctl -s | grep \"enabled\") =~ \"2\" ]]; then printf \"Reboot
+required to load rules\n\"; fi"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.
