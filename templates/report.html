@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Ubuntu Linux 22.04 LTS Gap Assessment Report</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: top; word-wrap: break-word; }
+        th { background-color: #34495e; color: white; }
+
+        .row-control { cursor: pointer; transition: background-color 0.2s; }
+        .row-control:hover { background-color: #f1f2f6; }
+        .details-row { display: none; background-color: #fafbfc; }
+
+        .status-pass { background-color: #2ecc71; color: white; font-weight: bold; text-align: center; }
+        .status-fail { background-color: #e74c3c; color: white; font-weight: bold; text-align: center; }
+        .status-partial { background-color: #f1c40f; color: black; font-weight: bold; text-align: center; }
+
+        .risk-Critical { color: #c0392b; font-weight: bold; }
+        .risk-High { color: #e67e22; font-weight: bold; }
+        .risk-Medium { color: #f39c12; font-weight: bold; }
+        .risk-Low { color: #2980b9; font-weight: bold; }
+
+        .details-content { padding: 15px; border-left: 4px solid #3498db; margin: 10px 0; }
+        .details-content h4 { margin-top: 0; color: #2980b9; }
+        pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CIS Gap Assessment Report</h1>
+        <p><strong>System:</strong> Ubuntu 22.04 LTS</p>
+        <p><strong>Generated At:</strong> {{TIMESTAMP}}</p>
+
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Control ID & Title</th>
+                    <th style="width: 20%;">Expected Status</th>
+                    <th style="width: 20%;">Current Configuration</th>
+                    <th style="width: 10%;">Result</th>
+                    <th style="width: 10%;">Risk Level</th>
+                    <th style="width: 15%;">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ROWS}}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleDetails(id) {
+            const detailsRow = document.getElementById('details-' + id);
+            if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+                detailsRow.style.display = 'table-row';
+            } else {
+                detailsRow.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
