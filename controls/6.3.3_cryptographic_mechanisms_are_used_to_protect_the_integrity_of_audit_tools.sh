@@ -34,28 +34,28 @@ l_check=\"\$(grep -Po -'^\h*(\/usr)?\/sbin\/'\"\$l_tool_file\"'\b' <<< \"\$l_str
 if [ -n \"\$l_check\" ]; then
 l_fname=\"\$(printf '%s' \"\${A_out[\$l_string]}\")\"
 [ \"\$l_check\" != \"\$(readlink -f \"\$l_check\")\" ] && \
-a_output3+=(\" - \\"\$l_check\\" should be updated to:
-\\"\$(readlink -e \"\$l_check\")\\"\" \"
-in: \\"\$l_fname\\"\")
+a_output3+=(\" - \\\"\$l_check\\\" should be updated to:
+\\\"\$(readlink -e \"\$l_check\")\\\"\" \"
+in: \\\"\$l_fname\\\"\")
 a_missing=()
 for l_var in \"\${a_items[@]}\"; do
 if ! grep -Pq -- \"\b\$l_var\b\" <<< \"\$l_string\"; then
-a_missing+=(\"\\"\$l_var\\"\")
+a_missing+=(\"\\\"\$l_var\\\"\")
 fi
 done
 if [ \"\${#a_missing[@]}\" -gt 0 ]; then
 a_output2+=(\" - Option(s): ( \${a_missing[*]} ) are
-missing from: \\"\$l_tool_file\\" in: \\"\$l_fname\\"\")
+missing from: \\\"\$l_tool_file\\\" in: \\\"\$l_fname\\\"\")
 else
-a_output+=(\" - Audit tool file \\"\$l_tool_file\\" exists
+a_output+=(\" - Audit tool file \\\"\$l_tool_file\\\" exists
 as:\" \"
-\\"\$l_string\\"\" \"
-in the configuration file: \\"\$l_fname\\"\")
+\\\"\$l_string\\\"\" \"
+in the configuration file: \\\"\$l_fname\\\"\")
 fi
 fi
 done
 else
-a_output2+=(\" - Audit tool file \\"\$l_tool_file\\" doesn't exist in
+a_output2+=(\" - Audit tool file \\\"\$l_tool_file\\\" doesn't exist in
 an AIDE configuration file\")
 fi
 done
@@ -93,8 +93,8 @@ for l_audit_file in \"\${a_audit_files[@]}\"; do
 if [ -f \"\$(readlink -f \"/sbin/\$l_audit_file\")\" ]; then
 a_parlist+=(\"\$l_audit_file\")
 else
-a_output+=(\" - Audit tool file \\"\$(readlink -f
-\"/sbin/\$l_audit_file\")\\" doesn't exist\")
+a_output+=(\" - Audit tool file \\\"\$(readlink -f
+\"/sbin/\$l_audit_file\")\\\" doesn't exist\")
 fi
 done
 [ \"\${#a_parlist[@]}\" -gt 0 ] && f_aide_conf

@@ -23,15 +23,15 @@ l_ufwscf=\"\$([ -f /etc/default/ufw ] && awk -F= '/^\s*IPT_SYSCTL=/ {print
 l_opt=\"\$(grep -Psoi '^\h*'\"\$l_grep\"'\h*=\h*\H+\b' \"\$l_ufwscf\" | tail -n
 1)\"
 l_option_value=\"\$(cut -d= -f2 <<< \"\$l_opt\" | xargs)\"
-[ -n \"\$l_option_value\" ] && a_output+=(\" - UFW set: \\"\$l_parameter_name\\"
-to: \\"\$l_option_value\\" in: \\"\$l_file\\"\")
+[ -n \"\$l_option_value\" ] && a_output+=(\" - UFW set: \\\"\$l_parameter_name\\\"
+to: \\\"\$l_option_value\\\" in: \\\"\$l_file\\\"\")
 while IFS= read -r l_file; do
 l_file=\"\${l_file//# /}\"
 l_opt=\"\$(grep -Poi '^\h*'\"\$l_grep\"'\h*=\h*\H+\b' \"\$l_file\" | tail -n
 1)\"
 l_option_value=\"\$(cut -d= -f2 <<< \"\$l_opt\" | xargs)\"
-[ -n \"\$l_option_value\" ] && a_output+=(\" - \\"\$l_parameter_name\\" is set
-to: \\"\$l_option_value\\" in: \\"\$l_file\\"\")
+[ -n \"\$l_option_value\" ] && a_output+=(\" - \\\"\$l_parameter_name\\\" is set
+to: \\\"\$l_option_value\\\" in: \\\"\$l_file\\\"\")
 done < <(\"\$l_systemdsysctl\" --cat-config | tac | grep -Pio
 '^\h*#\h*\/[^#\n\r\h]+\.conf\b')
 [ \"\${#a_output[@]}\" -gt \"0\" ] && printf '%s\n' \"\" \"\${a_output[@]}\" \"\"
@@ -85,7 +85,7 @@ running processes (e.g. Bash, Firefox, SSH sessions, GPG agent, etc) to extract
 additional credentials and continue to expand the scope of their attack.
 Enabling restricted mode will limit the ability of a compromised process to
 PTRACE_ATTACH on other processes running under the same user. With restricted
-mode, ptrace will continue to work with root user."tracer\") may
+mode, ptrace will continue to work with root user. (\"tracer\") may
 observe and control the execution of another process (the \"tracee\"), and examine and
 change the tracee's memory and registers.
 The sysctl settings (writable only with CAP_SYS_PTRACE) are:

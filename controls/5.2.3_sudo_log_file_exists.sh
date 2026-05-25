@@ -6,7 +6,7 @@ execute_control() {
     local TITLE="Ensure sudo log file exists ((Automated)"
     local EXPECTED="Run the following command to verify that sudo has a custom log file configured:
 # grep -rPsi
-\"^\h*Defaults\h+([^#]+,\h*)?logfile\h*=\h*(\\"|\')?\H+(\\"|\')?(,\h*\H+\h*)*\h*
+\"^\h*Defaults\h+([^#]+,\h*)?logfile\h*=\h*(\\\"|\')?\H+(\\\"|\')?(,\h*\H+\h*)*\h*
 (#.*)?\$\" /etc/sudoers*
 Verify the output matches:
 Defaults logfile=\"/var/log/sudo.log\""
