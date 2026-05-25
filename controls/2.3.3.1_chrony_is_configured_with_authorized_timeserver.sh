@@ -31,13 +31,13 @@ done < <(awk '\$1~/^\s*'\"\$l_include\"'\$/{print \$2}' \"\${a_config_files[*]}\
 for l_file in \"\${a_config_files[@]}\"; do
 l_parameter_line=\"\$(grep -Psi
 '^\h*'\"\$l_parameter_name\"'(\h+|\h*:\h*)'\"\$l_parameter_value\"'\b' \"\$l_file\")\"
-[ -n \"\$l_parameter_line\" ] && a_output+=(\" - Parameter: \\"\$(tr -d '()'
-<<< \${l_parameter_name//|/ or })\\"\" \
+[ -n \"\$l_parameter_line\" ] && a_output+=(\" - Parameter: \\\"\$(tr -d '()'
+<<< \${l_parameter_name//|/ or })\\\"\" \
 \"
-Exists in the file: \\"\$l_file\\" as:\" \"\$l_parameter_line\")
+Exists in the file: \\\"\$l_file\\\" as:\" \"\$l_parameter_line\")
 done
-[ \"\${#a_output[@]}\" -le \"0\" ] && a_output2+=(\" - Parameter: \\"\$(tr -d
-'()' <<< \${l_parameter_name//|/ or })\\"\" \
+[ \"\${#a_output[@]}\" -le \"0\" ] && a_output2+=(\" - Parameter: \\\"\$(tr -d
+'()' <<< \${l_parameter_name//|/ or })\\\"\" \
 \"
 Does not exist in the chrony configuration\")
 if [ \"\${#a_output2[@]}\" -le 0 ]; then

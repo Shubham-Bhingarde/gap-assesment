@@ -5,7 +5,7 @@ execute_control() {
     local CONTROL_ID="5.1.6"
     local TITLE="Ensure sshd Ciphers are configured ((Automated)"
     local EXPECTED="Run the following command to verify none of the \"weak\" ciphers are being used:
-# sshd -T | grep -Pi -'^ciphers\h+\\"?([^#\n\r]+,)?((3des|blowfish|cast128|aes(128|192|256))cbc|arcfour(128|256)?|rijndael-cbc@lysator\.liu\.se|chacha20poly1305@openssh\.com)\b'
+# sshd -T | grep -Pi -'^ciphers\h+\\\"?([^#\n\r]+,)?((3des|blowfish|cast128|aes(128|192|256))cbc|arcfour(128|256)?|rijndael-cbc@lysator\.liu\.se|chacha20poly1305@openssh\.com)\b'
 - IF - a line is returned, review the list of ciphers. If the line includes chacha20poly1305@openssh.com, review CVE-2023-48795 and verify the system has been
 patched. No ciphers in the list below should be returned as they're considered \"weak\":
 3des-cbc

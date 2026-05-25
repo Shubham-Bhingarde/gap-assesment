@@ -8,7 +8,7 @@ execute_control() {
 # sshd -T | grep maxsessions
 maxsessions 10
 Run the following command and verify the output:
-grep -Psi -- '^\h*MaxSessions\h+\\"?(1[1-9]|[2-9][0-9]|[1-9][0-9][0-9]+)\b'
+grep -Psi -- '^\h*MaxSessions\h+\\\"?(1[1-9]|[2-9][0-9]|[1-9][0-9][0-9]+)\b'
 /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf
 Nothing should be returned
 - IF - Match set statements are used in your environment, specify the connection
