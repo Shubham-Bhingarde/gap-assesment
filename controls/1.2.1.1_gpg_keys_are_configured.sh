@@ -4,14 +4,46 @@
 execute_control() {
     local CONTROL_ID="1.2.1.1"
     local TITLE="Ensure GPG keys are configured ((Manual)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Verify GPG keys are configured correctly for your package manager:
+# apt-key list
+Note:
+•
+•
+apt-key list is deprecated. Manage keyring files in trusted.gpg.d instead
+(see apt-key(8)).
+With the deprecation of apt-key it is recommended to use the Signed-By option
+in sources.list to require a repository to pass apt-secure(8) verification with a
+certain set of keys rather than all trusted keys apt has configured.
+- OR 1. Run the following script and verify GPG keys are configured correctly for your
+package manager:
+#! /usr/bin/env bash
+{
+for file in /etc/apt/trusted.gpg.d/*.{gpg,asc}
+/etc/apt/sources.list.d/*.{gpg,asc} ; do
+if [ -f \"\$file\" ]; then
+echo -e \"File: \$file\"
+gpg --list-packets \"\$file\" 2>/dev/null | awk '/keyid/ &&
+!seen[\$NF]++ {print \"keyid:\", \$NF}'
+gpg --list-packets \"\$file\" 2>/dev/null | awk '/Signed-By:/ {print
+\"signed-by:\", \$NF}'
+echo -e
+fi
+done
+}
+2. REVIEW and VERIFY to ensure that GPG keys are configured correctly for your
+package manager IAW site policy."
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.2.1.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Most package managers implement GPG key signing to verify package integrity during
+installation.
+
+Rationale:
+It is important to ensure that updates are obtained from a valid source to protect against
+spoofing that could lead to the inadvertent installation of malware on the system."
+    local ATTACK=""
+    local REMEDIATION="Update your package manager GPG keys in accordance with site policy."
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

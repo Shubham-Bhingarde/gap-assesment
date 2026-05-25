@@ -4,14 +4,24 @@
 execute_control() {
     local CONTROL_ID="5.4.2.3"
     local TITLE="Ensure group root is the only GID 0 group ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify no group other than root is assigned GID 0:
+# awk -F: '\$3==\"0\"{print \$1\":\"\$3}' /etc/group
+root:0"
     local RISK="Unknown"
-    local DESC="Placeholder description for 5.4.2.3. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The groupmod command can be used to specify which group the root group belongs
+to. This affects permissions of files that are group owned by the root group.
+
+Rationale:
+Using GID 0 for the root group helps prevent root group owned files from accidentally
+becoming accessible to non-privileged users."
+    local ATTACK=""
+    local REMEDIATION="Run the following command to set the root group's GID to 0:
+# groupmod -g 0 root
+Remove any groups other than the root group with GID 0 or assign them a new GID if
+appropriate."
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

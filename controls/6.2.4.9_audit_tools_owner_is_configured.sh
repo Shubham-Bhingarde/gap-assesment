@@ -4,14 +4,26 @@
 execute_control() {
     local CONTROL_ID="6.2.4.9"
     local TITLE="Ensure audit tools owner is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify the audit tools are owned by the root user:
+# stat -Lc \"%n %U\" /sbin/auditctl /sbin/aureport /sbin/ausearch /sbin/autrace
+/sbin/auditd /sbin/augenrules | awk '\$2 != \"root\" {print}'
+Nothing should be returned"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.4.9. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Audit tools include, but are not limited to, vendor-provided and open source audit tools
+needed to successfully view and manipulate audit information system activity and
+records. Audit tools include custom queries and report generators.
+
+Rationale:
+Protecting audit information includes identifying and protecting the tools used to view
+and manipulate log data. Protecting audit tools is necessary to prevent unauthorized
+operation on audit information."
+    local ATTACK=""
+    local REMEDIATION="Run the following command to change the owner of the audit tools to the root user:
+# chown root /sbin/auditctl /sbin/aureport /sbin/ausearch /sbin/autrace
+/sbin/auditd /sbin/augenrules"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

@@ -4,14 +4,71 @@
 execute_control() {
     local CONTROL_ID="5.3.3.4.4"
     local TITLE="Ensure pam_unix includes use_authtok ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify that use_authtok is set on the pam_unix.so
+module lines in the password stack:
+# grep -PH -'^\h*password\h+([^#\n\r]+)\h+pam_unix\.so\h+([^#\n\r]+\h+)?use_authtok\b'
+/etc/pam.d/common-password
+Output should be similar to:
+/etc/pam.d/common-password:password
+[success=1 default=ignore]
+pam_unix.so obscure use_authtok try_first_pass yescrypt
+Verify that the line(s) include use_authtok"
     local RISK="Unknown"
-    local DESC="Placeholder description for 5.3.3.4.4. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="use_authtok - When password changing enforce the module to set the new password
+to the one provided by a previously stacked password module
+
+Rationale:
+use_authtok allows multiple pam modules to confirm a new password before it is
+accepted."
+    local ATTACK=""
+    local REMEDIATION="Run the following command:
+# awk '/Password-Type:/{ f = 1;next } /-Type:/{ f = 0 } f {if
+(/pam_unix\.so/) print FILENAME}' /usr/share/pam-configs/*
+Edit any returned files add use_authtok to the pam_unix line in the Password section
+under Password: subsection:
+Note: The if the file's Password section includes a Password-Initial: subsection,
+use_authtok should not be added to the pam_unix line in the Password-Initial:
+subsection
+Example File:
+Name: Unix authentication
+Default: yes
+Priority: 256
+Auth-Type: Primary # <- Start of \"Auth\" section
+Auth:
+[success=end default=ignore]
+pam_unix.so try_first_pass
+Auth-Initial:
+[success=end default=ignore]
+pam_unix.so
+Account-Type: Primary # <- Start of \"Account\" section
+Account:
+[success=end new_authtok_reqd=done default=ignore]
+pam_unix.so
+Account-Initial:
+[success=end new_authtok_reqd=done default=ignore]
+pam_unix.so
+Session-Type: Additional # <- Start of \"Session\" section
+Session:
+required
+pam_unix.so
+Session-Initial:
+required
+pam_unix.so
+Password-Type: Primary # <- Start of \"Password\" section
+Password:
+[success=end default=ignore]
+pam_unix.so obscure use_authtok
+try_first_pass yescrypt # <- **ensure line includes use_authtok**
+Password-Initial:
+[success=end default=ignore]
+pam_unix.so obscure yescrypt # <**Password-Initial: subsection does not include use_authtok
+Run the following command to update the files in the /etc/pam.d/ directory:
+# pam-auth-update --enable <MODIFIED_PROFILE_NAME>
+Example:
+# pam-auth-update --enable unix"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

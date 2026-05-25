@@ -4,14 +4,44 @@
 execute_control() {
     local CONTROL_ID="2.1.13"
     local TITLE="Ensure rsync services are not in use ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify rsync is not installed:
+# dpkg-query -s rsync &>/dev/null && echo \"rsync is installed\"
+Nothing should be returned.
+- OR - IF - the rsync package is required as a dependency:
+Run the following command to verify rsync.service is not enabled:
+# systemctl is-enabled rsync.service 2>/dev/null | grep 'enabled'
+Nothing should be returned
+Run the following command to verify rsync.service is not active:
+# systemctl is-active rsync.service 2>/dev/null | grep '^active'
+Nothing should be returned
+Note: If the package is required for a dependency
+•
+•
+Ensure the dependent package is approved by local site policy
+Ensure stopping and masking the service and/or socket meets local site policy"
     local RISK="Unknown"
-    local DESC="Placeholder description for 2.1.13. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The rsync service can be used to synchronize files between systems over network
+links.
+
+Rationale:
+rsync.service presents a security risk as the rsync protocol is unencrypted.
+The rsync package should be removed to reduce the attack area of the system."
+    local ATTACK="There may be packages that are dependent on the rsync package. If the rsync
+package is removed, these dependent packages will be removed as well. Before
+removing the rsync package, review any dependent packages to determine if they are
+required on the system.
+- IF - a dependent package is required: stop and mask rsync.service leaving the
+rsync package installed."
+    local REMEDIATION="Run the following commands to stop rsync.service, and remove the rsync package:
+# systemctl stop rsync.service
+# apt purge rsync
+- OR - IF - the rsync package is required as a dependency:
+Run the following commands to stop and mask rsync.service:
+# systemctl stop rsync.service
+# systemctl mask rsync.service"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

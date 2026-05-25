@@ -4,14 +4,79 @@
 execute_control() {
     local CONTROL_ID="6.1.1.1.4"
     local TITLE="Ensure journald ForwardToSyslog is disabled ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="- IF - journald is the method for capturing logs
+Run the following script to verify ForwardToSyslog in not set to yes:
+#!/usr/bin/env bash
+{
+l_analyze_cmd=\"\$(readlink -e /bin/systemd-analyze || \
+readlink -e /usr/bin/systemd-analyze)\"
+l_conf_file=\"systemd/journald.conf\" l_block=\"Journal\"
+l_option=\"ForwardToSyslog\" l_option_value=\"no\" a_output=()
+while IFS= read -r l_file; do
+l_file=\"\${l_file//# /}\"
+l_opt=\"\$(awk '/\['\"\$l_block\"'\]/{a=1;next}/\[/{a=0}a' \"\$l_file\" \
+2>/dev/null | grep -Poi '^\h*'\"\$l_option\"'\h*=\h*\H+\b' | tail -n 1)\"
+l_option_value=\"\$(cut -d= -f2 <<< \"\$l_opt\" | xargs)\"
+[ -n \"\$l_option_value\" ] && \
+a_output+=(\" - \\"\$l_option\\" is set to: \\"\$l_option_value\\"\" \
+\"
+in: \\"\$l_file\\"\")
+done < <(\"\$l_analyze_cmd\" cat-config \"\$l_conf_file\" | tac | \
+grep -Pio '^\h*#\h*\/[^#\n\r\h]+\.conf\b')
+if [ \"\${#a_output[@]}\" -le \"0\" ]; then
+l_file=\"\$(readlink -e /etc/\"\$l_conf_file\" || \
+readlink -e /usr/lib/\"\$l_conf_file\")\"
+l_opt=\"\$(awk '/\['\"\$l_block\"'\]/{a=1;next}/\[/{a=0}a' \"\$l_file\" \
+2>/dev/null | grep -Poim 1 '^(\h*#)?\h*'\"\$l_option\"'\h*=\h*\H+\b')\"
+l_option_value=\"\$(cut -d= -f2 <<< \"\${l_opt//# /}\" | xargs)\"
+[ -n \"\$l_option_value\" ] && \
+a_output+=(\" - The default value: \\"\${l_opt//#/}\\"\" \
+\"
+is being used in the configuration\")
+fi
+[ \"\${#a_output[@]}\" -gt \"0\" ] && printf '%s\n' \"\" \"\${a_output[@]}\" \"\"
+}"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.1.1.1.4. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Data from journald should be kept in the confines of the service and not forwarded to
+other services.
+
+Rationale:
+- IF - journald is the method for capturing logs, all logs of the system should be
+handled by journald and not forwarded to other logging mechanisms.
+Note: This recommendation only applies if journald is the chosen method for
+client side logging. Do not apply this recommendation if rsyslog is used."
+    local ATTACK=""
+    local REMEDIATION="- IF - rsyslog is the preferred method for capturing logs, this section and
+Recommendation should be skipped and the \"Configure rsyslog\" section followed.
+- IF - journald is the preferred method for capturing logs:
+Set the following parameter in the [Journal] section in
+/etc/systemd/journald.conf or a file in /etc/systemd/journald.conf.d/ ending
+in .conf:
+ForwardToSyslog=no
+Example:
+#!/usr/bin/env bash
+{
+[ ! -d /etc/systemd/journald.conf.d/ ] && mkdir -p
+/etc/systemd/journald.conf.d/
+if grep -Psq -- '^\h*\[Journal\]' /etc/systemd/journald.conf.d/60journald.conf; then
+printf '%s\n' \"\" \"ForwardToSyslog=no\" >>
+/etc/systemd/journald.conf.d/60-journald.conf
+else
+printf '%s\n' \"\" \"[Journal]\" \"ForwardToSyslog=no\" >>
+/etc/systemd/journald.conf.d/60-journald.conf
+fi
+}
+Note: Drop-in configuration files have higher precedence and override the main
+configuration file. Files in the *.conf.d/ configuration subdirectories are sorted by their
+filename in lexicographic order, regardless of in which of the subdirectories they reside.
+When multiple files specify the same option, for options which accept just a single value,
+the entry in the file sorted last takes precedence, and for options which accept a list of
+values, entries are collected as they occur in the sorted files.
+Run to following command to update the parameters in the service:
+# systemctl reload-or-restart systemd-journald"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

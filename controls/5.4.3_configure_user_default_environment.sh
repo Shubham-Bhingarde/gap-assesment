@@ -4,14 +4,14 @@
 execute_control() {
     local CONTROL_ID="5.4.3"
     local TITLE="Configure user default environment"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED=""
     local RISK="Unknown"
-    local DESC="Placeholder description for 5.4.3. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC=""
+    local ATTACK=""
+    local REMEDIATION=""
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

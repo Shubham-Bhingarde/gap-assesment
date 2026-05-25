@@ -4,14 +4,26 @@
 execute_control() {
     local CONTROL_ID="1.6.5"
     local TITLE="Ensure access to /etc/issue is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command and verify Access is 644 or more restrictive and Uid and
+Gid are both 0/root:
+# stat -Lc 'Access: (%#a/%A)
+Access: (0644/-rw-r--r--)
+Uid: ( %u/ %U) Gid: { %g/ %G)' /etc/issue
+Uid: ( 0/ root) Gid: { 0/ root)"
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.6.5. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The contents of the /etc/issue file are displayed to users prior to login for local
+terminals.
+
+Rationale:
+- IF - the /etc/issue file does not have the correct access configured, it could be
+modified by unauthorized users with incorrect or misleading information."
+    local ATTACK=""
+    local REMEDIATION="Run the following commands to set mode, owner, and group on /etc/issue:
+# chown root:root \$(readlink -e /etc/issue)
+# chmod u-x,go-wx \$(readlink -e /etc/issue)"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

@@ -4,14 +4,26 @@
 execute_control() {
     local CONTROL_ID="6.2.1.3"
     local TITLE="Ensure auditing for processes that start prior to auditd is enabled ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command:
+# find /boot -type f -name 'grub.cfg' -exec grep -Ph -- '^\h*linux' {} + |
+grep -v 'audit=1'
+Nothing should be returned."
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.1.3. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Configure grub2 so that processes that are capable of being audited can be audited
+even if they start up prior to auditd startup.
+
+Rationale:
+Audit events need to be captured on processes that start up prior to auditd , so that
+potential malicious activity cannot go undetected."
+    local ATTACK=""
+    local REMEDIATION="Edit /etc/default/grub and add audit=1 to GRUB_CMDLINE_LINUX:
+Example:
+GRUB_CMDLINE_LINUX=\"audit=1\"
+Run the following command to update the grub2 configuration:
+# update-grub"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

@@ -4,14 +4,80 @@
 execute_control() {
     local CONTROL_ID="2.1.21"
     local TITLE="Ensure mail transfer agents are configured for local-only mode ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following script to verify that the MTA is not listening on any non-loopback
+address ( 127.0.0.1 or ::1 )
+#!/usr/bin/env bash
+{
+a_output=(); a_output2=(); a_port_list=(\"25\" \"465\" \"587\")
+for l_port_number in \"\${a_port_list[@]}\"; do
+if ss -plntu | grep -P -- ':'\"\$l_port_number\"'\b' | grep -Pvq -'\h+(127\.0\.0\.1|\[?::1\]?):'\"\$l_port_number\"'\b'; then
+a_output2+=(\" - Port \\"\$l_port_number\\" is listening on a nonloopback network interface\")
+else
+a_output+=(\" - Port \\"\$l_port_number\\" is not listening on a nonloopback network interface\")
+fi
+done
+if command -v postconf &> /dev/null; then
+l_interfaces=\"\$(postconf -n inet_interfaces)\"
+elif command -v exim &> /dev/null; then
+l_interfaces=\"\$(exim -bP local_interfaces)\"
+elif command -v sendmail &> /dev/null; then
+l_interfaces=\"\$(grep -i \"O DaemonPortOptions=\" /etc/mail/sendmail.cf |
+grep -oP '(?<=Addr=)[^,+]+' | grep -v '^127\.0\.0\.1\$')\"
+fi
+if [ -n \"\$l_interfaces\" ]; then
+if grep -Pqi '\ball\b' <<< \"\$l_interfaces\"; then
+a_output2+=(\" - MTA is bound to all network interfaces\")
+elif ! grep -Pqi '(inet_interfaces\h*=\h*)?(0\.0\.0\.0|::1|loopbackonly)' <<< \"\$l_interfaces\"; then
+a_output2+=(\" - MTA is bound to a network interface\" \"
+\\"\$l_interfaces\\"\")
+else
+a_output+=(\" - MTA is not bound to a non loopback network interface\"
+\"
+\\"\$l_interfaces\\"\")
+fi
+else
+a_output+=(\" - MTA not detected or in use\")
+fi
+if [ \"\${#a_output2[@]}\" -le 0 ]; then
+printf '%s\n' \"\" \"- Audit Result:\" \" ** PASS **\" \"\${a_output[@]}\"
+else
+printf '%s\n' \"\" \"- Audit Result:\" \" ** FAIL **\" \" * Reasons for
+audit failure *\" \"\${a_output2[@]}\" \"\"
+[ \"\${#a_output[@]}\" -gt 0 ] && printf '%s\n' \"- Correctly set:\"
+\"\${a_output[@]}\"
+fi
+}"
     local RISK="Unknown"
-    local DESC="Placeholder description for 2.1.21. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Mail Transfer Agents (MTA), such as sendmail and Postfix, are used to listen for
+incoming mail and transfer the messages to the appropriate user or mail server. If the
+system is not intended to be a mail server, it is recommended that the MTA be
+configured to only process local mail.
+
+Rationale:
+The software for all Mail Transfer Agents is complex and most have a long history of
+security issues. While it is important to ensure that the system can process local mail
+messages, it is not necessary to have the MTA's daemon listening on a port unless the
+server is intended to be a mail server that receives and processes mail from other
+systems."
+    local ATTACK="This recommendation is designed around the postfix mail server. Depending on your
+environment you may have an alternative MTA installed such as exim4 or sendmail. If
+this is the case consult the documentation for your installed MTA to configure the
+recommended state."
+    local REMEDIATION="Edit /etc/postfix/main.cf and add the following line to the RECEIVING MAIL
+section. If the line already exists, change it to look like the line below:
+inet_interfaces = loopback-only
+Run the following command to restart postfix:
+# systemctl restart postfix
+Note:
+•
+•
+This recommendation is designed around the postfix mail server.
+Depending on your environment you may have an alternative MTA installed such
+as exim4 or sendmail. If this is the case consult the documentation for your
+installed MTA to configure the recommended state."
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

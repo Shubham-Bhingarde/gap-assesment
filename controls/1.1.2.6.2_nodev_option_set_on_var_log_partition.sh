@@ -4,14 +4,32 @@
 execute_control() {
     local CONTROL_ID="1.1.2.6.2"
     local TITLE="Ensure nodev option set on /var/log partition ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="- IF - a separate partition exists for /var/log, verify that the nodev option is set.
+Run the following command to verify that the nodev mount option is set.
+Example:
+# findmnt -kn /var/log | grep -v nodev
+Nothing should be returned"
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.1.2.6.2. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The nodev mount option specifies that the filesystem cannot contain special devices.
+
+Rationale:
+Since the /var/log filesystem is not intended to support devices, set this option to
+ensure that users cannot create a block or character special devices in /var/log."
+    local ATTACK=""
+    local REMEDIATION="- IF - a separate partition exists for /var/log.
+Edit the /etc/fstab file and add nodev to the fourth field (mounting options) for the
+/var/log partition.
+Example:
+<device> /var/log
+0
+<fstype>
+defaults,rw,nosuid,nodev,noexec,relatime
+0
+Run the following command to remount /var/log with the configured options:
+# mount -o remount /var/log"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

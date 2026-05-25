@@ -4,14 +4,41 @@
 execute_control() {
     local CONTROL_ID="1.7.5"
     local TITLE="Ensure GDM screen locks cannot be overridden ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following commands to verify that the screen lock cannot be overridden:
+# grep -Psi \"idle-delay|lock-delay|lock-enabled\" /etc/dconf/db/*/locks/*
+/org/gnome/desktop/session/idle-delay
+/org/gnome/desktop/screensaver/lock-delay
+/org/gnome/desktop/screensaver/lock-enabled"
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.7.5. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="GNOME Desktop Manager can lock down specific settings by using the lockdown mode
+in dconf to prevent users from changing specific settings.
+To lock down a dconf key or subpath, create a locks subdirectory in the keyfile directory.
+The files inside this directory contain a list of keys or subpaths to lock. Just as with the
+keyfiles, you may add any number of files to this directory.
+
+Rationale:
+Setting a lock-out value reduces the window of opportunity for unauthorized user access
+to another user's session that has been left unattended.
+Without locking down the system settings, user settings take precedence over the
+system settings."
+    local ATTACK=""
+    local REMEDIATION="1. To prevent the user from overriding these settings, create the file
+/etc/dconf/db/local.d/locks/00-screensaver with the following content:
+# Lock desktop screensaver settings
+/org/gnome/desktop/session/idle-delay
+/org/gnome/desktop/screensaver/lock-delay
+/org/gnome/desktop/screensaver/lock-enabled
+2. Update the system databases:
+# dconf update
+Note:
+•
+•
+A user profile must exist in order to apply locks. If a user profile does not exist
+review the remediation steps in the previous recommendation.
+Users must log out and back in again before the system-wide settings take effect."
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

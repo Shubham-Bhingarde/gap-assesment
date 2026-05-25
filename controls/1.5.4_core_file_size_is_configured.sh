@@ -4,14 +4,37 @@
 execute_control() {
     local CONTROL_ID="1.5.4"
     local TITLE="Ensure core file size is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify a hard limit for core is set to 0 for all users *:
+# grep -Psi -- '^\h*\*\h+hard\h+core\b' /etc/security/limits.conf
+/etc/security/limits.d/*
+Example output:
+/etc/security/limits.d/60-limits.conf:* hard core 0
+Verify no line are returned with a value greater than 0."
     local RISK="Unknown"
-    local DESC="Placeholder description for 1.5.4. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="core - limits the core file size
+hard - for enforcing hard resource limits. These limits are set by the superuser and
+enforced by the Kernel. The user cannot raise their requirement of system resources
+above such values.
+
+Rationale:
+Setting a hard limit on core dumps prevents users from overriding the soft variable.
+A core dump includes a memory image taken at the time the operating system
+terminates an application. The memory image could contain sensitive data and is
+generally useful only for developers trying to debug problems."
+    local ATTACK=""
+    local REMEDIATION="1. Run the following command to comment out any entries that include a hard
+value for core greater than 0 in /etc/security/limits.conf and and file in
+the /etc/security/limits.d/ directory.
+Example:
+# sed -ri '/^\s*[#\n\r]+\s+hard\s+core\h+([1-9][0-9]*)/s/^/# /'
+/etc/security/limits.conf /etc/security/limits.d/*
+2. Create or edit a file in /etc/security/limits.d/ and add the following line:
+* hard core 0
+Example:
+# printf '%s\n' \"\" \"* hard core 0\" >> /etc/security/limits.d/60-limits.conf"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

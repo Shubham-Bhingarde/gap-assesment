@@ -4,14 +4,29 @@
 execute_control() {
     local CONTROL_ID="7.1.1"
     local TITLE="Ensure access to /etc/passwd is configured ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Run the following command to verify /etc/passwd is mode 644 or more restrictive, Uid
+is 0/root and Gid is 0/root:
+# stat -Lc 'Access: (%#a/%A)
+Access: (0644/-rw-r--r--)
+Uid: ( %u/ %U) Gid: ( %g/ %G)'
+/etc/passwd
+Uid: ( 0/ root) Gid: ( 0/ root)"
     local RISK="Unknown"
-    local DESC="Placeholder description for 7.1.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The /etc/passwd file contains user account information that is used by many system
+utilities and therefore must be readable for these utilities to operate.
+
+Rationale:
+It is critical to ensure that the /etc/passwd file is protected from unauthorized write
+access. Although it is protected by default, the file permissions could be changed either
+inadvertently or through malicious actions."
+    local ATTACK=""
+    local REMEDIATION="Run the following commands to remove excess permissions, set owner, and set group
+on /etc/passwd:
+# chmod u-x,go-wx /etc/passwd
+# chown root:root /etc/passwd"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

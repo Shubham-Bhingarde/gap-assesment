@@ -4,14 +4,112 @@
 execute_control() {
     local CONTROL_ID="6.2.3.5"
     local TITLE="Ensure events that modify the system's network environment are collected ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="On disk configuration
+Run the following commands to check the on disk rules:
+# awk '/^ *-a *always,exit/ \
+&&/ -F *arch=b(32|64)/ \
+&&/ -S/ \
+&&(/sethostname/ \
+||/setdomainname/) \
+&&(/ key= *[!-~]* *\$/||/ -k *[!-~]* *\$/)' /etc/audit/rules.d/*.rules
+# awk '/^ *-w/ \
+&&(/\/etc\/issue/ \
+||/\/etc\/issue.net/ \
+||/\/etc\/hosts/ \
+||/\/etc\/network \
+||/\/etc\/netplan) \
+&&/ +-p *wa/ \
+&&(/ key= *[!-~]* *\$/||/ -k *[!-~]* *\$/)' /etc/audit/rules.d/*.rules
+Verify the output matches:
+-a always,exit -F arch=b64 -S sethostname,setdomainname -k system-locale
+-a always,exit -F arch=b32 -S sethostname,setdomainname -k system-locale
+-w /etc/issue -p wa -k system-locale
+-w /etc/issue.net -p wa -k system-locale
+-w /etc/hosts -p wa -k system-locale
+-w /etc/networks -p wa -k system-locale
+-w /etc/network -p wa -k system-locale
+-w /etc/netplan -p wa -k system-locale
+Running configuration
+Run the following command to check loaded rules:
+# auditctl -l | awk '/^ *-a *always,exit/ \
+&&/ -F *arch=b(32|64)/ \
+&&/ -S/ \
+&&(/sethostname/ \
+||/setdomainname/) \
+&&(/ key= *[!-~]* *\$/||/ -k *[!-~]* *\$/)'
+# auditctl -l | awk '/^ *-w/ \
+&&(/\/etc\/issue/ \
+||/\/etc\/issue.net/ \
+||/\/etc\/hosts/ \
+||/\/etc\/network \
+||/\/etc\/netplan) \
+&&/ +-p *wa/ \
+&&(/ key= *[!-~]* *\$/||/ -k *[!-~]* *\$/)'
+Verify the output includes:
+-a always,exit -F arch=b64 -S sethostname,setdomainname -F key=system-locale
+-a always,exit -F arch=b32 -S sethostname,setdomainname -F key=system-locale
+-w /etc/issue -p wa -k system-locale
+-w /etc/issue.net -p wa -k system-locale
+-w /etc/hosts -p wa -k system-locale
+-w /etc/networks -p wa -k system-locale
+-w /etc/network -p wa -k system-locale
+-w /etc/netplan -p wa -k system-locale"
     local RISK="Unknown"
-    local DESC="Placeholder description for 6.2.3.5. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="Record changes to network environment files or system calls. The below parameters
+monitors the following system calls, and write an audit event on system call exit:
+•
+•
+sethostname - set the systems host name
+setdomainname - set the systems domain name
+The files being monitored are:
+•
+•
+•
+•
+•
+/etc/issue and /etc/issue.net - messages displayed pre-login
+/etc/hosts - file containing host names and associated IP addresses
+/etc/networks - symbolic names for networks
+/etc/network/ - directory containing network interface scripts and
+configurations files
+/etc/netplan/ - central location for YAML networking configurations files
+
+Rationale:
+Monitoring system events that change network environments, such as sethostname
+and setdomainname, helps identify unauthorized alterations to host and domain names,
+which could compromise security settings reliant on these names. Changes to
+/etc/hosts can signal unauthorized attempts to alter machine associations with IP
+addresses, potentially redirecting users and processes to unintended destinations.
+Surveillance of /etc/issue and /etc/issue.net is crucial to detect intruders inserting
+false information to deceive users. Monitoring /etc/network/ reveals modifications to
+network interfaces or scripts that may jeopardize system availability or security.
+Additionally, tracking changes in the /etc/netplan/ directory ensures swift detection
+of unauthorized adjustments to network configurations. All audit records should be
+appropriately tagged for relevance"
+    local ATTACK=""
+    local REMEDIATION="Create audit rules
+Edit or create a file in the /etc/audit/rules.d/ directory, ending in .rules extension,
+with the relevant rules to monitor events that modify the system's network environment.
+Example:
+# printf \"
+-a always,exit -F arch=b64 -S sethostname,setdomainname -k system-locale
+-a always,exit -F arch=b32 -S sethostname,setdomainname -k system-locale
+-w /etc/issue -p wa -k system-locale
+-w /etc/issue.net -p wa -k system-locale
+-w /etc/hosts -p wa -k system-locale
+-w /etc/networks -p wa -k system-locale
+-w /etc/network -p wa -k system-locale
+-w /etc/netplan -p wa -k system-locale
+\" >> /etc/audit/rules.d/50-system_locale.rules
+Load audit rules
+Merge and load the rules into active configuration:
+# augenrules --load
+Check if reboot is required.
+# if [[ \$(auditctl -s | grep \"enabled\") =~ \"2\" ]]; then printf \"Reboot
+required to load rules\n\"; fi"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.

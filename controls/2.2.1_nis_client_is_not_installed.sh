@@ -4,14 +4,29 @@
 execute_control() {
     local CONTROL_ID="2.2.1"
     local TITLE="Ensure nis client is not installed ((Automated)"
-    local EXPECTED="Placeholder Expected Status"
+    local EXPECTED="Verify nis is not installed. Use the following command to provide the needed
+information:
+# dpkg-query -s nis &>/dev/null && echo \"nis is installed\"
+Nothing should be returned."
     local RISK="Unknown"
-    local DESC="Placeholder description for 2.2.1. Run manual audit or refer to CIS PDF."
-    local ATTACK="Placeholder attack impact."
-    local REMEDIATION="Placeholder remediation steps."
+    local DESC="The Network Information Service (NIS), formerly known as Yellow Pages, is a clientserver directory service protocol used to distribute system configuration files. The NIS
+client was used to bind a machine to an NIS server and receive the distributed
+configuration files.
+
+Rationale:
+The NIS service is inherently an insecure system that has been vulnerable to DOS
+attacks, buffer overflows and has poor authentication for querying NIS maps. NIS
+generally has been replaced by such protocols as Lightweight Directory Access
+Protocol (LDAP). It is recommended that the service be removed."
+    local ATTACK="Many insecure service clients are used as troubleshooting tools and in testing
+environments. Uninstalling them can inhibit capability to test and troubleshoot. If they
+are required it is advisable to remove the clients after use to prevent accidental or
+intentional misuse."
+    local REMEDIATION="Uninstall nis:
+# apt purge nis"
 
     local RESULT="FAIL"
-    local CURRENT="This control has not been implemented yet. Please add custom bash logic."
+    local CURRENT="Manual audit required. Please verify against the expected configuration."
 
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.
