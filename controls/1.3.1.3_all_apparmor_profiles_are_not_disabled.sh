@@ -35,11 +35,19 @@ intended to ensure that any policies that exist on the system are activated."
 Note: Any unconfined processes may need to have a profile created or activated for
 them and then be restarted"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local STATUS=$(apparmor_status --profiled 2>/dev/null || true)
+    local ENFORCING=$(apparmor_status --enforced 2>/dev/null || true)
+    local COMPLAINING=$(apparmor_status --complaining 2>/dev/null || true)
 
+    if [ -n "$STATUS" ] && [ "$STATUS" -eq $(($ENFORCING + $COMPLAINING)) ] && [ "$STATUS" -gt 0 ]; then
+        CURRENT="All profiles are enforcing or complaining."
+        RESULT="PASS"
+    else
+        CURRENT="Profiles are unconfined or apparmor_status failed."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

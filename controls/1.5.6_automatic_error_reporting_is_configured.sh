@@ -28,11 +28,17 @@ Run the following commands to stop and mask the apport service
 - OR Run the following command to remove the apport package:
 # apt purge apport"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local HAS_APPORT=$(dpkg-query -W -f='${Status}' apport 2>/dev/null | grep -c "install ok installed" || true)
 
+    if [ "$HAS_APPORT" -eq 0 ]; then
+        CURRENT="apport is not installed."
+        RESULT="PASS"
+    else
+        CURRENT="apport is installed."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

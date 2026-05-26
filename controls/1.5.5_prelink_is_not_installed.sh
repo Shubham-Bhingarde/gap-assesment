@@ -22,11 +22,17 @@ is able to compromise a common library such as libc."
 Uninstall prelink using the appropriate package manager or manual installation:
 # apt purge prelink"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local HAS_PRELINK=$(dpkg-query -W -f='${Status}' prelink 2>/dev/null | grep -c "install ok installed" || true)
 
+    if [ "$HAS_PRELINK" -eq 0 ]; then
+        CURRENT="prelink is not installed."
+        RESULT="PASS"
+    else
+        CURRENT="prelink is installed."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -29,11 +29,22 @@ defaults,rw,nosuid,nodev,noexec,relatime
 Run the following command to remount /tmp with the configured options:
 # mount -o remount /tmp"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
-
+    local MOUNT_CHECK=$(findmnt -kn "/tmp" 2>/dev/null)
+    if [ -z "$MOUNT_CHECK" ]; then
+        CURRENT="/tmp is not mounted, so noexec check is not applicable (fail by default or handle upstream)."
+        RESULT="FAIL"
+    else
+        local OPTIONS=$(findmnt -kn -o OPTIONS "/tmp" 2>/dev/null)
+        if echo "$OPTIONS" | grep -q "\bnoexec\b"; then
+            CURRENT="/tmp is mounted with noexec option ($OPTIONS)."
+            RESULT="PASS"
+        else
+            CURRENT="/tmp is mounted but missing noexec option ($OPTIONS)."
+            RESULT="FAIL"
+        fi
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

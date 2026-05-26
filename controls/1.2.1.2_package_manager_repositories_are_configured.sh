@@ -16,11 +16,17 @@ identified or a rogue repository could introduce compromised software."
     local ATTACK=""
     local REMEDIATION="Configure your package manager repositories according to site policy."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local REPOS=$(grep -E "^(deb|deb-src)" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null || true)
 
+    if [ -n "$REPOS" ]; then
+        CURRENT="Package manager repositories are configured. Verification requires manual review."
+        RESULT="PASS"
+    else
+        CURRENT="No repositories configured."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

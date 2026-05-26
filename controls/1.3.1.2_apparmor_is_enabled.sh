@@ -22,11 +22,18 @@ Run the following commands to update the grub2 configuration and reboot the syst
 # update-grub
 # reboot"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local CMDLINE=$(grep "apparmor=1" /boot/grub/grub.cfg 2>/dev/null || true)
+    local SECURITY_CMDLINE=$(grep "security=apparmor" /boot/grub/grub.cfg 2>/dev/null || true)
 
+    if [ -n "$CMDLINE" ] && [ -n "$SECURITY_CMDLINE" ]; then
+        CURRENT="apparmor is enabled in boot parameters."
+        RESULT="PASS"
+    else
+        CURRENT="apparmor boot parameters not found."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -71,11 +71,18 @@ Note: You must include the uint32 along with the integer key values as shown.
 # dconf update
 5. Users must log out and back in again before the system-wide settings take effect."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local IDLE_DELAY=$(gsettings get org.gnome.desktop.session idle-delay 2>/dev/null || echo "missing")
+    local LOCK_DELAY=$(gsettings get org.gnome.desktop.screensaver lock-delay 2>/dev/null || echo "missing")
 
+    if [ "$IDLE_DELAY" != "missing" ] && [ "$IDLE_DELAY" != "uint32 0" ]; then
+        CURRENT="Screen locks when idle."
+        RESULT="PASS"
+    else
+        CURRENT="Screen does not lock when idle."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -33,11 +33,17 @@ A user profile must exist in order to apply locks. If a user profile does not ex
 review the remediation steps in the previous recommendation.
 Users must log out and back in again before the system-wide settings take effect."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local OVERRIDE=$(grep -E "^autorun-never" /etc/dconf/db/local.d/locks/* 2>/dev/null || true)
 
+    if [ -n "$OVERRIDE" ]; then
+        CURRENT="Autorun never cannot be overridden."
+        RESULT="PASS"
+    else
+        CURRENT="Autorun never can be overridden."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

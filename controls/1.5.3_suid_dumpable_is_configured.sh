@@ -95,11 +95,17 @@ Example:
 3. Run the following command to load all system configuration filles:
 # sysctl --system"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local KERNEL_VAL=$(sysctl -n fs.suid_dumpable 2>/dev/null || echo "")
 
+    if [ "$KERNEL_VAL" = "0" ]; then
+        CURRENT="fs.suid_dumpable is set to $KERNEL_VAL."
+        RESULT="PASS"
+    else
+        CURRENT="fs.suid_dumpable is set to $KERNEL_VAL (expected 0)."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }
