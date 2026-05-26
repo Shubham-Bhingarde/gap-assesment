@@ -6,7 +6,7 @@ execute_control() {
     local TITLE="Ensure root account access is controlled ((Automated)"
     local EXPECTED="Run the following command to verify that either the root user's password is set or the
 root user's account is locked:
-# passwd -S root | awk '\$2 ~ /^(P|L)/ {print \"User: \\"\" \$1 \"\\" Password is
+# passwd -S root | awk '\$2 ~ /^(P|L)/ {print \"User: \\\"\" \$1 \"\\\" Password is
 status: \" \$2}'
 Verify the output is either:
 User: \"root\" Password is status: P

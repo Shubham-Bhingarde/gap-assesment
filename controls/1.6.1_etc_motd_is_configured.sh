@@ -12,7 +12,7 @@ a_files=()
 for l_file in /etc/motd{,.d/*}; do
 if grep -Psqi -- \"(\\\v|\\\r|\\\m|\\\s|\b\$(grep ^ID= /etc/os-release |
 cut -d= -f2 | sed -e 's/\"//g')\b)\" \"\$l_file\"; then
-l_output2=\"\$l_output2\n - File: \\"\$l_file\\" includes system
+l_output2=\"\$l_output2\n - File: \\\"\$l_file\\\" includes system
 information\"
 else
 a_files+=(\"\$l_file\")
@@ -72,7 +72,7 @@ a_files=()
 for l_file in /etc/motd{,.d/*}; do
 if grep -Psqi -- \"(\\\v|\\\r|\\\m|\\\s|\b\$(grep ^ID= /etc/os-release |
 cut -d= -f2 | sed -e 's/\"//g')\b)\" \"\$l_file\"; then
-echo -e \"\n - File: \\"\$l_file\\" includes system information. Edit
+echo -e \"\n - File: \\\"\$l_file\\\" includes system information. Edit
 this file to remove these entries\"
 else
 a_files+=(\"\$l_file\")

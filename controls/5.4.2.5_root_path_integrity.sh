@@ -27,17 +27,17 @@ for l_path in \"\${a_path_loc[@]}\"; do
 if [ -d \"\$l_path\" ]; then
 while IFS=: read -r l_fmode l_fown; do
 [ \"\$l_fown\" != \"root\" ] && \
-a_output2+=(\" - Directory: \\"\$l_path\\" is owned by: \\"\$l_fown\\"\"
+a_output2+=(\" - Directory: \\\"\$l_path\\\" is owned by: \\\"\$l_fown\\\"\"
 \
 \"
-should be owned by \\"root\\"\")
+should be owned by \\\"root\\\"\")
 [ \$(( \$l_fmode & \$l_pmask )) -gt 0 ] && \
-a_output2+=(\" - Directory: \\"\$l_path\\" is mode: \\"\$l_fmode\\"\" \
+a_output2+=(\" - Directory: \\\"\$l_path\\\" is mode: \\\"\$l_fmode\\\"\" \
 \"
-and should be mode: \\"\$l_maxperm\\" or more restrictive\")
+and should be mode: \\\"\$l_maxperm\\\" or more restrictive\")
 done <<< \"\$(stat -Lc '%#a:%U' \"\$l_path\")\"
 else
-a_output2+=(\" - \\"\$l_path\\" is not a directory\")
+a_output2+=(\" - \\\"\$l_path\\\" is not a directory\")
 fi
 done
 if [ \"\${#a_output2[@]}\" -le 0 ]; then

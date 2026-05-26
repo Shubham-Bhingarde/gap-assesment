@@ -22,19 +22,19 @@ while IFS=: read -r l_mode l_user l_group; do
 a_out2=()
 [ \$(( \$l_mode & \$perm_mask )) -gt 0 ] && a_out2+=(\"
 Is mode:
-\\"\$l_mode\\"\" \
+\\\"\$l_mode\\\"\" \
 \"
-should be mode: \\"\$maxperm\\" or more restrictive\")
+should be mode: \\\"\$maxperm\\\" or more restrictive\")
 [ \"\$l_user\" != \"root\" ] && a_out2+=(\"
-Is owned by \\"\$l_user\\"
-should be owned by \\"root\\"\")
+Is owned by \\\"\$l_user\\\"
+should be owned by \\\"root\\\"\")
 [ \"\$l_group\" != \"root\" ] && a_out2+=(\"
 Is group owned by
-\\"\$l_user\\" should be group owned by \\"root\\"\")
+\\\"\$l_user\\\" should be group owned by \\\"root\\\"\")
 if [ \"\${#a_out2[@]}\" -gt \"0\" ]; then
-a_output2+=(\" - File: \\"\$l_file\\":\" \"\${a_out2[@]}\")
+a_output2+=(\" - File: \\\"\$l_file\\\":\" \"\${a_out2[@]}\")
 else
-a_output+=(\" - File: \\"\$l_file\\":\" \"
+a_output+=(\" - File: \\\"\$l_file\\\":\" \"
 Correct: mode (\$l_mode),
 owner (\$l_user)\" \
 \"

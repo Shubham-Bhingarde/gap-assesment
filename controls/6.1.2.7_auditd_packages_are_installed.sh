@@ -7,9 +7,9 @@ execute_control() {
     local EXPECTED="Review the /etc/rsyslog.conf and /etc/rsyslog.d/*.conf files and verify that the
 system is not configured to accept incoming logs.
 advanced format
-# grep -Psi -- '^\h*module\(load=\\"?imtcp\\"?\)' /etc/rsyslog.conf
+# grep -Psi -- '^\h*module\(load=\\\"?imtcp\\\"?\)' /etc/rsyslog.conf
 /etc/rsyslog.d/*.conf
-# grep -Psi -- '^\h*input\(type=\\"?imtcp\\"?\b' /etc/rsyslog.conf
+# grep -Psi -- '^\h*input\(type=\\\"?imtcp\\\"?\b' /etc/rsyslog.conf
 /etc/rsyslog.d/*.conf
 Nothing should be returned
 obsolete legacy format
