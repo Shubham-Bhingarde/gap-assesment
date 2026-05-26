@@ -17,10 +17,10 @@ service_not_enabled_chk()
 l_out2=\"\"
 if systemctl is-enabled \"\$l_service_name\" 2>/dev/null | grep -q 'enabled';
 then
-l_out2=\"\$l_out2\n - Daemon: \\"\$l_service_name\\" is enabled on the system\"
+l_out2=\"\$l_out2\n - Daemon: \\\"\$l_service_name\\\" is enabled on the system\"
 fi
 if systemctl is-active \"\$l_service_name\" 2>/dev/null | grep -q '^active'; then
-l_out2=\"\$l_out2\n - Daemon: \\"\$l_service_name\\" is active on the system\"
+l_out2=\"\$l_out2\n - Daemon: \\\"\$l_service_name\\\" is active on the system\"
 fi
 }
 l_service_name=\"systemd-timesyncd.service\" # Check systemd-timesyncd daemon
@@ -30,7 +30,7 @@ l_timesyncd=\"y\"
 l_out_tsd=\"\$l_out2\"
 else
 l_timesyncd=\"n\"
-l_out_tsd=\"\n - Daemon: \\"\$l_service_name\\" is not enabled and not active on
+l_out_tsd=\"\n - Daemon: \\\"\$l_service_name\\\" is not enabled and not active on
 the system\"
 fi
 l_service_name=\"chrony.service\" # Check chrony
@@ -40,7 +40,7 @@ l_chrony=\"y\"
 l_out_chrony=\"\$l_out2\"
 else
 l_chrony=\"n\"
-l_out_chrony=\"\n - Daemon: \\"\$l_service_name\\" is not enabled and not active
+l_out_chrony=\"\n - Daemon: \\\"\$l_service_name\\\" is not enabled and not active
 on the system\"
 fi
 l_status=\"\$l_timesyncd\$l_chrony\"

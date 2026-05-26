@@ -26,26 +26,26 @@ if [ -n \"\$l_used_parameter_setting\" ]; then
 while IFS=: read -r l_file_name l_file_parameter; do
 while IFS=\"=\" read -r l_file_parameter_name l_file_parameter_value; do
 if grep -Pq -- \"\$l_parameter_value\" <<< \"\$l_file_parameter_value\"; then
-a_out+=(\" - Parameter: \\"\${l_file_parameter_name// /}\\"\" \
+a_out+=(\" - Parameter: \\\"\${l_file_parameter_name// /}\\\"\" \
 \"
-correctly set to: \\"\${l_file_parameter_value// /}\\"\" \
+correctly set to: \\\"\${l_file_parameter_value// /}\\\"\" \
 \"
-in the file: \\"\$l_file_name\\"\")
+in the file: \\\"\$l_file_name\\\"\")
 else
-a_out2+=(\" - Parameter: \\"\${l_file_parameter_name// /}\\"\" \
+a_out2+=(\" - Parameter: \\\"\${l_file_parameter_name// /}\\\"\" \
 \"
-incorrectly set to: \\"\${l_file_parameter_value// /}\\"\" \
+incorrectly set to: \\\"\${l_file_parameter_value// /}\\\"\" \
 \"
-in the file: \\"\$l_file_name\\"\" \
+in the file: \\\"\$l_file_name\\\"\" \
 \"
-Should be set to: \\"\$l_value_out\\"\")
+Should be set to: \\\"\$l_value_out\\\"\")
 fi
 done <<< \"\$l_file_parameter\"
 done <<< \"\$l_used_parameter_setting\"
 else
-a_out2+=(\" - Parameter: \\"\$l_parameter_name\\" is not set in an included file\" \
+a_out2+=(\" - Parameter: \\\"\$l_parameter_name\\\" is not set in an included file\" \
 \"
-*** Note: \\"\$l_parameter_name\\" May be set in a file that's ignored by load
+*** Note: \\\"\$l_parameter_name\\\" May be set in a file that's ignored by load
 procedure ***\")
 fi
 }

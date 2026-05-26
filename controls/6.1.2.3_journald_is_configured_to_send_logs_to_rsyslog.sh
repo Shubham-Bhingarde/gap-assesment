@@ -19,9 +19,9 @@ l_opt=\"\$(awk '/\['\"\$l_block\"'\]/{a=1;next}/\[/{a=0}a' \"\$l_file\" \
 2>/dev/null | grep -Poi '^\h*'\"\$l_option\"'\h*=\h*\H+\b' | tail -n 1)\"
 l_option_value=\"\$(cut -d= -f2 <<< \"\$l_opt\" | xargs)\"
 [ -n \"\$l_option_value\" ] && \
-a_output+=(\" - \\"\$l_option\\" is set to: \\"\$l_option_value\\"\" \
+a_output+=(\" - \\\"\$l_option\\\" is set to: \\\"\$l_option_value\\\"\" \
 \"
-in: \\"\$l_file\\"\")
+in: \\\"\$l_file\\\"\")
 done < <(\"\$l_analyze_cmd\" cat-config \"\$l_conf_file\" | tac | \
 grep -Pio '^\h*#\h*\/[^#\n\r\h]+\.conf\b')
 if [ \"\${#a_output[@]}\" -le \"0\" ]; then
@@ -30,7 +30,7 @@ l_opt=\"\$(awk '/\['\"\$l_block\"'\]/{a=1;next}/\[/{a=0}a' \"\$l_file\" \
 2>/dev/null | grep -Poim 1 '^(\h*#)?\h*'\"\$l_option\"'\h*=\h*\H+\b')\"
 l_option_value=\"\$(cut -d= -f2 <<< \"\${l_opt//# /}\" | xargs)\"
 [ -n \"\$l_option_value\" ] && \
-a_output+=(\" - The default value: \\"\${l_opt//#/}\\"\" \
+a_output+=(\" - The default value: \\\"\${l_opt//#/}\\\"\" \
 \"
 is being used in the configuration\")
 fi

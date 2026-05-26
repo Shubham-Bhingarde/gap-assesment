@@ -22,21 +22,21 @@ if (( \"\${#a_files[@]}\" > 0 )); then
 for l_file in \"\${a_files[@]}\"; do
 l_file_mode=\"\$(stat -Lc '%#a' \"\$l_file\")\"
 echo -e \"\n- Audit Result:\n ** FAIL **\n - File:
-\\"\$l_file\\" is mode: \\"\$l_file_mode\\"\n
-(should be mode: \\"\$l_maxperm\\"
+\\\"\$l_file\\\" is mode: \\\"\$l_file_mode\\\"\n
+(should be mode: \\\"\$l_maxperm\\\"
 or more restrictive)\n\"
 done
 else
 echo -e \"\n- Audit Result:\n ** PASS **\n - All files in
-\\"\$l_audit_log_directory\\" are mode: \\"\$l_maxperm\\" or more restrictive\"
+\\\"\$l_audit_log_directory\\\" are mode: \\\"\$l_maxperm\\\" or more restrictive\"
 fi
 else
 echo -e \"\n- Audit Result:\n ** FAIL **\n - Log file directory not
-set in \\"/etc/audit/auditd.conf\\" please set log file directory\"
+set in \\\"/etc/audit/auditd.conf\\\" please set log file directory\"
 fi
 else
 echo -e \"\n- Audit Result:\n ** FAIL **\n - File:
-\\"/etc/audit/auditd.conf\\" not found.\n - ** Verify auditd is installed **\"
+\\\"/etc/audit/auditd.conf\\\" not found.\n - ** Verify auditd is installed **\"
 fi
 }"
     local RISK="Unknown"
