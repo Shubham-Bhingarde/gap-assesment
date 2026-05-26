@@ -13,9 +13,9 @@ advanced format
 /etc/rsyslog.d/*.conf
 Nothing should be returned
 obsolete legacy format
-# grep -Psi -- '^\h*\\$ModLoad\h+imtcp\b' /etc/rsyslog.conf
+# grep -Psi -- '^\h*\$ModLoad\h+imtcp\b' /etc/rsyslog.conf
 /etc/rsyslog.d/*.conf
-# grep -Psi -- '^\h*\\$InputTCPServerRun\b' /etc/rsyslog.conf
+# grep -Psi -- '^\h*\$InputTCPServerRun\b' /etc/rsyslog.conf
 /etc/rsyslog.d/*.conf
 Nothing should be returned"
     local RISK="Unknown"

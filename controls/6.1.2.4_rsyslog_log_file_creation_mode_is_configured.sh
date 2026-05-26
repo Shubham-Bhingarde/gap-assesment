@@ -6,7 +6,7 @@ execute_control() {
     local TITLE="Ensure rsyslog log file creation mode is configured ((Automated)"
     local EXPECTED="Run the following command
 Run the following command to verify \$FileCreateMode:
-# grep -Ps '^\h*\\$FileCreateMode\h+0[0,2,4,6][0,2,4]0\b' /etc/rsyslog.conf
+# grep -Ps '^\h*\$FileCreateMode\h+0[0,2,4,6][0,2,4]0\b' /etc/rsyslog.conf
 /etc/rsyslog.d/*.conf
 Verify the output is includes 0640 or more restrictive:
 \$FileCreateMode 0640
