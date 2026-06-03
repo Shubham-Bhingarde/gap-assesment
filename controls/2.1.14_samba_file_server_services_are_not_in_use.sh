@@ -38,11 +38,33 @@ Run the following commands to stop and mask the smbd.service:
 # systemctl stop smbd.service
 # systemctl mask smbd.service"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    # 1. Check if the package is installed
+    local PKG_CHECK=$(dpkg-query -W -f='${Status}' "samba" 2>/dev/null | grep -c "install ok installed" || true)
+
+    if [ "$PKG_CHECK" -eq 0 ]; then
+        CURRENT="samba package is not installed."
+        RESULT="PASS"
+    else
+        # 2. Package is installed, check if the service is enabled/active
+        local SVC_ENABLED=$(systemctl is-enabled "smbd" 2>/dev/null || echo "unknown")
+        local SVC_ACTIVE=$(systemctl is-active "smbd" 2>/dev/null || echo "unknown")
+
+        if [ "$SVC_ENABLED" = "masked" ] || [ "$SVC_ENABLED" = "disabled" ] || [ "$SVC_ENABLED" = "unknown" ]; then
+            if [ "$SVC_ACTIVE" != "active" ]; then
+                CURRENT="samba is installed, but service smbd is $SVC_ENABLED and $SVC_ACTIVE."
+                RESULT="PASS"
+            else
+                CURRENT="Service smbd is $SVC_ENABLED but actively running ($SVC_ACTIVE)."
+                RESULT="FAIL"
+            fi
+        else
+            CURRENT="samba is installed and service smbd is enabled ($SVC_ENABLED)."
+            RESULT="FAIL"
+        fi
+    fi
 
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }
