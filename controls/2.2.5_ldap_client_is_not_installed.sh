@@ -21,11 +21,19 @@ environment."
     local REMEDIATION="Uninstall ldap-utils:
 # apt purge ldap-utils"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    # 1. Check if the package is installed
+    local PKG_CHECK=$(dpkg-query -W -f='${Status}' "ldap-utils" 2>/dev/null | grep -c "install ok installed" || true)
+
+    if [ "$PKG_CHECK" -eq 0 ]; then
+        CURRENT="ldap-utils package is not installed."
+        RESULT="PASS"
+    else
+        CURRENT="ldap-utils package is installed."
+        RESULT="FAIL"
+    fi
 
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -46,11 +46,18 @@ automount-open=false
 # dconf update
 Note: Users must log out and back in again before the system-wide settings take effect."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local AUTO_MOUNT=$(gsettings get org.gnome.desktop.media-handling automount 2>/dev/null || echo "missing")
+    local AUTO_MOUNT_OPEN=$(gsettings get org.gnome.desktop.media-handling automount-open 2>/dev/null || echo "missing")
 
+    if [ "$AUTO_MOUNT" = "false" ] && [ "$AUTO_MOUNT_OPEN" = "false" ]; then
+        CURRENT="Automatic mounting is disabled."
+        RESULT="PASS"
+    else
+        CURRENT="Automatic mounting is not disabled."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

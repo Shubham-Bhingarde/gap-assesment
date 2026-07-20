@@ -5,7 +5,7 @@ execute_control() {
     local CONTROL_ID="6.3.2"
     local TITLE="Ensure filesystem integrity is regularly checked ((Automated)"
     local EXPECTED="Run the following commands to verify a cron job scheduled to run the aide check.
-# grep -Prs '^([^#\n\r]+\h+)?(\/usr\/s?bin\/|^\h*)aide(\.wrapper)?\h+(-(check|update)|([^#\n\r]+\h+)?\\$AIDEARGS)\b' /etc/cron.* /etc/crontab
+# grep -Prs '^([^#\n\r]+\h+)?(\/usr\/s?bin\/|^\h*)aide(\.wrapper)?\h+(-(check|update)|([^#\n\r]+\h+)?\$AIDEARGS)\b' /etc/cron.* /etc/crontab
 /var/spool/cron/
 Ensure a cron job in compliance with site policy is returned.
 - OR Run the following commands to verify that aidecheck.service and aidecheck.timer

@@ -66,11 +66,33 @@ Note: Other web server packages may exist. If not required and authorized by loc
 policy, they should also be removed. If the package is required for a dependency, the
 service and socket should be stopped and masked."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    # 1. Check if the package is installed
+    local PKG_CHECK=$(dpkg-query -W -f='${Status}' "apache2" 2>/dev/null | grep -c "install ok installed" || true)
+
+    if [ "$PKG_CHECK" -eq 0 ]; then
+        CURRENT="apache2 package is not installed."
+        RESULT="PASS"
+    else
+        # 2. Package is installed, check if the service is enabled/active
+        local SVC_ENABLED=$(systemctl is-enabled "apache2" 2>/dev/null || echo "unknown")
+        local SVC_ACTIVE=$(systemctl is-active "apache2" 2>/dev/null || echo "unknown")
+
+        if [ "$SVC_ENABLED" = "masked" ] || [ "$SVC_ENABLED" = "disabled" ] || [ "$SVC_ENABLED" = "unknown" ]; then
+            if [ "$SVC_ACTIVE" != "active" ]; then
+                CURRENT="apache2 is installed, but service apache2 is $SVC_ENABLED and $SVC_ACTIVE."
+                RESULT="PASS"
+            else
+                CURRENT="Service apache2 is $SVC_ENABLED but actively running ($SVC_ACTIVE)."
+                RESULT="FAIL"
+            fi
+        else
+            CURRENT="apache2 is installed and service apache2 is enabled ($SVC_ENABLED)."
+            RESULT="FAIL"
+        fi
+    fi
 
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

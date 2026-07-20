@@ -44,11 +44,17 @@ CLASS=\"--class gnu-linux --class gnu --class os --unrestricted\"
 Run the following command to update the grub2 configuration:
 # update-grub"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local HAS_PASS=$(grep -E "^set superusers=" /boot/grub/grub.cfg 2>/dev/null || true)
 
+    if [ -n "$HAS_PASS" ]; then
+        CURRENT="Bootloader password is set."
+        RESULT="PASS"
+    else
+        CURRENT="Bootloader password is not set."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -72,11 +72,18 @@ the volume or disk will vary depending on your environment:
 defaults,nodev,nosuid,noexec
 0 0"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local MOUNT_CHECK=$(findmnt -kn "/tmp" 2>/dev/null)
+    local SYSTEMD_CHECK=$(systemctl is-enabled $(systemd-escape --suffix=mount "/tmp") 2>/dev/null || echo "")
 
+    if [ -n "$MOUNT_CHECK" ]; then
+        CURRENT="/tmp is mounted. Systemd status: ${SYSTEMD_CHECK:-unknown}"
+        RESULT="PASS"
+    else
+        CURRENT="/tmp is not mounted as a separate partition or tmpfs."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

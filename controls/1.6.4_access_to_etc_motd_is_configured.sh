@@ -26,11 +26,19 @@ modified by unauthorized users with incorrect or misleading information."
 - OR Run the following command to remove the /etc/motd file:
 # rm /etc/motd"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
-
+    local STAT=$(stat -c "%a %U %G" /etc/motd 2>/dev/null || echo "missing")
+    if [ "$STAT" = "missing" ]; then
+        CURRENT="/etc/motd does not exist (pass)."
+        RESULT="PASS"
+    elif [ "$STAT" = "644 root root" ] || [ "$STAT" = "444 root root" ]; then
+        CURRENT="/etc/motd permissions are $STAT."
+        RESULT="PASS"
+    else
+        CURRENT="/etc/motd permissions are $STAT (expected 644 root root)."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }
