@@ -227,9 +227,50 @@ printf '%s\n' \"\" \" - remediation of kernel module: \\\"\$l_mod_name\\\"
 complete\" \"\"
 }"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
+    local a_check=() a_output=() a_module=() a_output2=() a_output3=()
+    local l_search="$(readlink -e /usr/lib/modules/ 2>/dev/null || readlink -e /lib/modules/ 2>/dev/null)"
+
+    if [ -n "$l_search" ]; then
+        IFS=$'\n' read -r -d '' -a a_mounted < <(findmnt -Dkerno fstype | sort -u && printf '\0' )
+        IFS=$'\n' read -r -d '' -a a_lsmod < <(lsmod | awk '{print $1}' && printf '\0' )
+        IFS=$'\n' read -r -d '' -a a_showconfig < <(modprobe --showconfig 2>/dev/null | grep -Pi -- '^\h*(blacklist|install)\h+' && printf '\0')
+
+        while IFS= read -r -d $'\0' l_module_dir; do
+            if [ ! "$(basename "$l_module_dir")" = "nls" ]; then
+                while IFS= read -r -d $'\0' l_module_file; do
+                    l_mname="$(basename "$l_module_file" | cut -d'.' -f1)"
+                    if [ -f "$l_module_file" ] && ! grep -Psiq -- '\b'"$l_mname"'\b' <<< "${a_module[*]}"; then
+                        a_module+=("$l_mname")
+                    fi
+                done < <(find -L "$l_module_dir" -mindepth 1 -maxdepth 1 -type f -print0 2>/dev/null)
+            fi
+        done < <(find "$l_search"/**/kernel/fs/ -mindepth 1 -maxdepth 1 -type d ! -empty -print0 2>/dev/null)
+
+        for l_module in "${a_module[@]}"; do
+            if grep -Psoiq -- '\b'"$l_module"'\b' <<< "${a_mounted[*]}"; then
+                a_output+=("$l_module")
+            elif grep -Psoiq -- '\b'"$l_module"'\b' <<< "${a_lsmod[*]}"; then
+                a_output2+=("$l_module")
+            elif ! grep -Psioq -- '\binstall\h+'"${l_module//-/_}"'\h+\H+\b' <<< "${a_showconfig[*]}" || \
+                 ! grep -Psioq -- '\bblacklist\h+'"${l_module//-/_}"'\b' <<< "${a_showconfig[*]}"; then
+                a_output3+=("$l_module")
+            fi
+        done
+
+        if [ "${#a_output[@]}" -gt 0 ] || [ "${#a_output2[@]}" -gt 0 ] || [ "${#a_output3[@]}" -gt 0 ]; then
+            RESULT="FAIL"
+            CURRENT="Mounted: [${#a_output[@]}]. Loaded: [${#a_output2[@]}]. Loadable: [${#a_output3[@]}]. Require review."
+        else
+            RESULT="PASS"
+            CURRENT="All unused filesystem kernel modules are configured correctly."
+        fi
+    else
+        RESULT="PASS"
+        CURRENT="Modules path not found, assuming passing state or non-modular kernel."
+    fi
     # NOTE: This is an auto-generated stub.
     # Add real bash logic to evaluate compliance status.
 

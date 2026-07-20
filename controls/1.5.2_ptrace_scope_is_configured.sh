@@ -142,11 +142,17 @@ Note: The example uses kernel.yama.ptrace_scope = 1 but value may be set to 1,
 3. Run the following command to load all system configuration filles:
 # sysctl --system"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local KERNEL_VAL=$(sysctl -n kernel.yama.ptrace_scope 2>/dev/null || echo "")
 
+    if [ "$KERNEL_VAL" = "1" ]; then
+        CURRENT="kernel.yama.ptrace_scope is set to $KERNEL_VAL."
+        RESULT="PASS"
+    else
+        CURRENT="kernel.yama.ptrace_scope is set to $KERNEL_VAL (expected 1)."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -21,11 +21,18 @@ Access Control system will be available."
     local REMEDIATION="Run the following command to install apparmor and apparmor-utils:
 # apt install apparmor apparmor-utils"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local PKG_CHECK=$(dpkg-query -W -f='${Status}' apparmor 2>/dev/null | grep -c "install ok installed" || true)
+    local UTILS_CHECK=$(dpkg-query -W -f='${Status}' apparmor-utils 2>/dev/null | grep -c "install ok installed" || true)
 
+    if [ "$PKG_CHECK" -eq 1 ] && [ "$UTILS_CHECK" -eq 1 ]; then
+        CURRENT="apparmor and apparmor-utils are installed."
+        RESULT="PASS"
+    else
+        CURRENT="apparmor or apparmor-utils is missing."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

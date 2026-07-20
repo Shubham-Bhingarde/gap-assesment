@@ -47,11 +47,17 @@ disable-user-list=true
 Note: When the user profile is created or changed, the user will need to log out and log
 in again before the changes will be applied."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local DISABLE_USER_LIST=$(grep -E "^disable-user-list=true" /etc/gdm3/greeter.dconf-defaults 2>/dev/null || true)
 
+    if [ -n "$DISABLE_USER_LIST" ]; then
+        CURRENT="GDM user list is disabled."
+        RESULT="PASS"
+    else
+        CURRENT="GDM user list is not disabled."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -40,11 +40,17 @@ WaylandEnable=false
 # Uncomment the line below to turn on debugging
 #Enable=true"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local XWAYLAND=$(grep -E "^WaylandEnable=false" /etc/gdm3/custom.conf 2>/dev/null || true)
 
+    if [ -z "$XWAYLAND" ]; then
+        CURRENT="Xwayland is enabled (default)."
+        RESULT="PASS"
+    else
+        CURRENT="Xwayland is disabled."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

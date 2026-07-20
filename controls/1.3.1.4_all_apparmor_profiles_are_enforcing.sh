@@ -32,11 +32,17 @@ intended to ensure that any policies that exist on the system are activated."
 Note: Any unconfined processes may need to have a profile created or activated for
 them and then be restarted"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local COMPLAINING=$(apparmor_status --complaining 2>/dev/null || true)
 
+    if [ "$COMPLAINING" = "0" ]; then
+        CURRENT="All profiles are in enforcing mode."
+        RESULT="PASS"
+    else
+        CURRENT="Some profiles are in complaining mode ($COMPLAINING)."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

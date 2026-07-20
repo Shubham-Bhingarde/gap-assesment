@@ -32,11 +32,17 @@ resolution system, and it will attempt to upgrade the most important packages at
 expense of less important ones if necessary. So, dist-upgrade command may remove
 some packages."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local PENDING=$(apt-get -s upgrade 2>/dev/null | grep -E "^Inst" || true)
 
+    if [ -z "$PENDING" ]; then
+        CURRENT="No updates are pending."
+        RESULT="PASS"
+    else
+        CURRENT="Updates are pending installation."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

@@ -28,11 +28,22 @@ defaults,rw,nosuid,nodev,noexec,relatime
 Run the following command to remount /var/log/audit with the configured options:
 # mount -o remount /var/log/audit"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
-
+    local MOUNT_CHECK=$(findmnt -kn "/var/log/audit" 2>/dev/null)
+    if [ -z "$MOUNT_CHECK" ]; then
+        CURRENT="/var/log/audit is not mounted, so nodev check is not applicable (fail by default or handle upstream)."
+        RESULT="FAIL"
+    else
+        local OPTIONS=$(findmnt -kn -o OPTIONS "/var/log/audit" 2>/dev/null)
+        if echo "$OPTIONS" | grep -q "\bnodev\b"; then
+            CURRENT="/var/log/audit is mounted with nodev option ($OPTIONS)."
+            RESULT="PASS"
+        else
+            CURRENT="/var/log/audit is mounted but missing nodev option ($OPTIONS)."
+            RESULT="FAIL"
+        fi
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

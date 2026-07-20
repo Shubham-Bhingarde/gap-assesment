@@ -33,11 +33,19 @@ Example:
 Example:
 # printf '%s\n' \"\" \"* hard core 0\" >> /etc/security/limits.d/60-limits.conf"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local LIMIT=$(grep -E "^\\s*\\*\\s+hard\\s+core" /etc/security/limits.conf /etc/security/limits.d/* 2>/dev/null || true)
+    local SYSCTL=$(sysctl fs.suid_dumpable 2>/dev/null | awk '{print $3}')
+    local SYSTEMD_CONF=$(grep -E "^\\s*DumpCore=no" /etc/systemd/system.conf 2>/dev/null || grep -E "^\\s*DumpCore=no" /etc/systemd/coredump.conf 2>/dev/null || true)
 
+    if echo "$LIMIT" | grep -q "0" && [ "$SYSCTL" = "0" ] && [ -n "$SYSTEMD_CONF" ]; then
+        CURRENT="Core dumps are disabled."
+        RESULT="PASS"
+    else
+        CURRENT="Core dumps are not fully disabled. Limit: $LIMIT, Sysctl: $SYSCTL."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

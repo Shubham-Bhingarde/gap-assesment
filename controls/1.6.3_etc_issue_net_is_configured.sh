@@ -33,11 +33,17 @@ Example:
 # echo \"Authorized users only. All activity may be monitored and reported.\" >
 /etc/issue.net"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local E_MATCH=$(grep -E -i "(\\v|\\r|\\m|\\s|$(grep '^ID=' /etc/os-release | cut -d= -f2 | sed -e 's/"//g'))" /etc/issue.net 2>/dev/null || true)
 
+    if [ -n "$E_MATCH" ]; then
+        CURRENT="/etc/issue.net contains OS information."
+        RESULT="FAIL"
+    else
+        CURRENT="/etc/issue.net is properly configured."
+        RESULT="PASS"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

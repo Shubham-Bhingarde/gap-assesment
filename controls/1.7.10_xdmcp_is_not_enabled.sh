@@ -57,11 +57,17 @@ AutomaticLogin = user1
 # Additionally lets the X server dump core if it crashes
 # Enable=true"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local XDMCP=$(grep -E "^Enable=true" /etc/gdm3/custom.conf 2>/dev/null || true)
 
+    if [ -z "$XDMCP" ]; then
+        CURRENT="XDMCP is not enabled."
+        RESULT="PASS"
+    else
+        CURRENT="XDMCP is enabled."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

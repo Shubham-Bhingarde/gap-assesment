@@ -38,11 +38,17 @@ autorun-never=true
 # dconf update
 Note: Users must log out and back in again before the system-wide settings take effect."
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    local AUTORUN=$(gsettings get org.gnome.desktop.media-handling autorun-never 2>/dev/null || echo "missing")
 
+    if [ "$AUTORUN" = "true" ]; then
+        CURRENT="Autorun never is enabled."
+        RESULT="PASS"
+    else
+        CURRENT="Autorun never is not enabled."
+        RESULT="FAIL"
+    fi
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }

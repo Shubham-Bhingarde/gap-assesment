@@ -45,11 +45,33 @@ Run the following commands to stop and mask isc-dhcp-server.service and iscdhcp-
 # systemctl stop isc-dhcp-server.service isc-dhcp-server6.service
 # systemctl mask isc-dhcp-server isc-dhcp-server6.service"
 
-    local RESULT="FAIL"
-    local CURRENT="Manual audit required. Please verify against the expected configuration."
+    local RESULT="PASS"
+    local CURRENT=""
 
-    # NOTE: This is an auto-generated stub.
-    # Add real bash logic to evaluate compliance status.
+    # 1. Check if the package is installed
+    local PKG_CHECK=$(dpkg-query -W -f='${Status}' "isc-dhcp-server" 2>/dev/null | grep -c "install ok installed" || true)
+
+    if [ "$PKG_CHECK" -eq 0 ]; then
+        CURRENT="isc-dhcp-server package is not installed."
+        RESULT="PASS"
+    else
+        # 2. Package is installed, check if the service is enabled/active
+        local SVC_ENABLED=$(systemctl is-enabled "isc-dhcp-server" 2>/dev/null || echo "unknown")
+        local SVC_ACTIVE=$(systemctl is-active "isc-dhcp-server" 2>/dev/null || echo "unknown")
+
+        if [ "$SVC_ENABLED" = "masked" ] || [ "$SVC_ENABLED" = "disabled" ] || [ "$SVC_ENABLED" = "unknown" ]; then
+            if [ "$SVC_ACTIVE" != "active" ]; then
+                CURRENT="isc-dhcp-server is installed, but service isc-dhcp-server is $SVC_ENABLED and $SVC_ACTIVE."
+                RESULT="PASS"
+            else
+                CURRENT="Service isc-dhcp-server is $SVC_ENABLED but actively running ($SVC_ACTIVE)."
+                RESULT="FAIL"
+            fi
+        else
+            CURRENT="isc-dhcp-server is installed and service isc-dhcp-server is enabled ($SVC_ENABLED)."
+            RESULT="FAIL"
+        fi
+    fi
 
     save_result "$CONTROL_ID" "$TITLE" "$EXPECTED" "$CURRENT" "$RESULT" "$RISK" "$REMEDIATION" "$DESC" "$ATTACK"
 }
